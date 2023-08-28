@@ -4,31 +4,36 @@
 #include "Interfaces/IPluginManager.h"
 #include "Styling/SlateStyleRegistry.h"
 #include "Styling/SlateStyle.h"
+#include "Styling/SlateStyleMacros.h"
 
-#define IMAGE_BRUSH(RelativePath, ...) FSlateImageBrush(StyleInstance->RootToContentDir(RelativePath, TEXT(".png")), __VA_ARGS__)
-
-static const FVector2D Icon16x16(16.0f, 16.0f);
 static const FVector2D Icon20x20(20.0f, 20.0f);
 static const FVector2D Icon40x40(40.0f, 40.0f);
 
-TSharedPtr<FSlateStyleSet> FBlueprintScreenshotToolStyle::StyleInstance = nullptr;
+TSharedPtr<FBlueprintScreenshotToolStyle::FStyle> FBlueprintScreenshotToolStyle::StyleInstance = nullptr;
+
+FBlueprintScreenshotToolStyle::FStyle::FStyle() : FSlateStyleSet(FBlueprintScreenshotToolStyle::GetStyleSetName())
+{
+}
+
+void FBlueprintScreenshotToolStyle::FStyle::Initialize()
+{
+	auto& PluginManager = IPluginManager::Get();
+	const auto Plugin = PluginManager.FindPlugin("BlueprintScreenshotTool");
+	const auto ResourcesDir = Plugin->GetBaseDir() / TEXT("Resources");
+
+	StyleInstance->SetContentRoot(ResourcesDir);
+	StyleInstance->Set("BlueprintScreenshotTool.TakeScreenshot", new IMAGE_BRUSH_SVG(TEXT("BlueprintScreenshotTool"), Icon40x40));
+	StyleInstance->Set("BlueprintScreenshotTool.TakeScreenshot.Small", new IMAGE_BRUSH_SVG(TEXT("BlueprintScreenshotTool"), Icon20x20));
+
+	FSlateStyleRegistry::RegisterSlateStyle(*StyleInstance);
+}
 
 void FBlueprintScreenshotToolStyle::Initialize()
 {
 	if (!StyleInstance.IsValid())
 	{
-		const auto& StyleSetName = GetStyleSetName();
-		StyleInstance = MakeShared<FSlateStyleSet>(StyleSetName);
-	
-		auto& PluginManager = IPluginManager::Get();
-		const auto Plugin = PluginManager.FindPlugin("BlueprintScreenshotTool");
-		const auto ResourcesDir = Plugin->GetBaseDir() / TEXT("Resources");
-	
-		StyleInstance->SetContentRoot(ResourcesDir);
-		StyleInstance->Set("BlueprintScreenshotTool.TakeScreenshot", new IMAGE_BRUSH(TEXT("BlueprintScreenshotTool_40x"), Icon40x40));
-		StyleInstance->Set("BlueprintScreenshotTool.TakeScreenshot.Small", new IMAGE_BRUSH(TEXT("BlueprintScreenshotTool_20x"), Icon20x20));
-
-		FSlateStyleRegistry::RegisterSlateStyle(*StyleInstance);
+		StyleInstance = MakeShareable(new FBlueprintScreenshotToolStyle::FStyle());
+		StyleInstance->Initialize();
 	}
 }
 

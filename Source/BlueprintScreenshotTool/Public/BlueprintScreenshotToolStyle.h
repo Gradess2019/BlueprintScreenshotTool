@@ -3,12 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-
-class FSlateStyleSet;
+#include "Styling/SlateStyle.h"
 
 class BLUEPRINTSCREENSHOTTOOL_API FBlueprintScreenshotToolStyle
 {
 public:
+	class FStyle : public FSlateStyleSet
+	{
+	public:
+		FStyle();
+
+		void Initialize();
+	};
+	
 	static void Initialize();
 	static void Shutdown();
 	static void ReloadTextures();
@@ -18,5 +25,5 @@ public:
 	static FName GetStyleSetName();
 
 private:
-	static TSharedPtr<FSlateStyleSet> StyleInstance;
+	static TSharedPtr<FStyle> StyleInstance;
 };
