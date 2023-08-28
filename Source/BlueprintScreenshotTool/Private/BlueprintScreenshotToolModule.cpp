@@ -1,6 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "BlueprintScreenshotTool.h"
+#include "BlueprintScreenshotToolModule.h"
 
 #define LOCTEXT_NAMESPACE "FBlueprintScreenshotToolModule"
 
