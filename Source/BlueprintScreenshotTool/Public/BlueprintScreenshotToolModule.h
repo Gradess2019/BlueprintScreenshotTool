@@ -5,11 +5,24 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
+class FBlueprintScreenshotToolCommandManager;
+
 class FBlueprintScreenshotToolModule : public IModuleInterface
 {
+private:
+	TSharedPtr<FBlueprintScreenshotToolCommandManager> CommandManager;
+	
 public:
 
 	/** IModuleInterface implementation */
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
+
+protected:
+	void RegisterStyle();
+	void RegisterCommands();
+
+	void UnregisterStyle();
+	void UnregisterCommands();
+	
 };

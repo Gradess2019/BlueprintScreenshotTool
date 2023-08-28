@@ -2,19 +2,46 @@
 
 #include "BlueprintScreenshotToolModule.h"
 
+#include "BlueprintScreenshotToolCommandManager.h"
+#include "BlueprintScreenshotToolStyle.h"
+
 #define LOCTEXT_NAMESPACE "FBlueprintScreenshotToolModule"
 
 void FBlueprintScreenshotToolModule::StartupModule()
 {
-	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
+	RegisterStyle();
+	RegisterCommands();
 }
 
 void FBlueprintScreenshotToolModule::ShutdownModule()
 {
-	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
-	// we call this function before unloading the module.
+	UnregisterStyle();
+	UnregisterCommands();
+}
+
+void FBlueprintScreenshotToolModule::RegisterStyle()
+{
+	FBlueprintScreenshotToolStyle::Initialize();
+	FBlueprintScreenshotToolStyle::ReloadTextures();
+}
+
+void FBlueprintScreenshotToolModule::RegisterCommands()
+{
+	CommandManager = MakeShareable(new FBlueprintScreenshotToolCommandManager());
+	CommandManager->RegisterCommands();
+}
+
+void FBlueprintScreenshotToolModule::UnregisterStyle()
+{
+	FBlueprintScreenshotToolStyle::Shutdown();
+}
+
+void FBlueprintScreenshotToolModule::UnregisterCommands()
+{
+	CommandManager->UnregisterCommands();
+	CommandManager.Reset();
 }
 
 #undef LOCTEXT_NAMESPACE
-	
+
 IMPLEMENT_MODULE(FBlueprintScreenshotToolModule, BlueprintScreenshotTool)
