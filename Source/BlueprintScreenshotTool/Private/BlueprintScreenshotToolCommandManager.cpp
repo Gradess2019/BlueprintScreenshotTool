@@ -3,6 +3,8 @@
 
 #include "BlueprintScreenshotToolCommandManager.h"
 #include "BlueprintScreenshotToolCommands.h"
+#include "BlueprintScreenshotToolHandler.h"
+
 #include "Toolkits/AssetEditorToolkit.h"
 
 void FBlueprintScreenshotToolCommandManager::RegisterCommands()
@@ -29,13 +31,13 @@ void FBlueprintScreenshotToolCommandManager::MapCommands()
 
 	CommandList->MapAction(
 		FBlueprintScreenshotToolCommands::Get().TakeScreenshot,
-		FExecuteAction::CreateRaw(this, &FBlueprintScreenshotToolCommandManager::OnTakeScreenshot),
+		FExecuteAction::CreateStatic(UBlueprintScreenshotToolHandler::TakeScreenshot),
 		FCanExecuteAction());
 }
 
 void FBlueprintScreenshotToolCommandManager::RegisterToolbarExtension()
 {
-	const auto ExtensibilityManager = FAssetEditorToolkit::GetSharedToolBarExtensibilityManager();
+	auto ExtensibilityManager = FAssetEditorToolkit::GetSharedToolBarExtensibilityManager();
 	checkf(ExtensibilityManager.IsValid(), TEXT("ToolBarExtensibilityManager is not valid"));
 	
 	ToolbarExtension = MakeShareable(new FExtender());
