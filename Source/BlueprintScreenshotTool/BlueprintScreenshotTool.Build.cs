@@ -39,7 +39,9 @@ public class BlueprintScreenshotTool : ModuleRules
 				"Slate",
 				"SlateCore",
 				"Projects",
-				"UnrealEd"
+				"UnrealEd", 
+				"ImageWriteQueue",
+				"ApplicationCore",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
