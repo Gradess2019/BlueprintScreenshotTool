@@ -16,6 +16,9 @@ class BLUEPRINTSCREENSHOTTOOL_API UBlueprintScreenshotToolSettings : public UObj
 
 public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Blueprint Screenshot Tool")
+	FString ScreenshotBaseName = FString(TEXT("GraphScreenshot"));
+	
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Blueprint Screenshot Tool")
 	float ScreenshotPadding = 128.f;
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Blueprint Screenshot Tool")
@@ -25,5 +28,5 @@ public:
 	float MaxScreenshotSize = 15360.f;
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Blueprint Screenshot Tool")
-	FString ScreenshotBaseName = FString(TEXT("GraphScreenshot"));
+	float ZoomAmount = 1.f;
 };
