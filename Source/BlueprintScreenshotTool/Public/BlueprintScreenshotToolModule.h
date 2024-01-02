@@ -11,9 +11,8 @@ class FBlueprintScreenshotToolModule : public IModuleInterface
 {
 private:
 	TSharedPtr<FBlueprintScreenshotToolCommandManager> CommandManager;
-	
-public:
 
+public:
 	/** IModuleInterface implementation */
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
@@ -21,8 +20,9 @@ public:
 protected:
 	void RegisterStyle();
 	void RegisterCommands();
+	void RegisterSettings();
 
 	void UnregisterStyle();
 	void UnregisterCommands();
-	
+	void UnregisterSettings();
 };
