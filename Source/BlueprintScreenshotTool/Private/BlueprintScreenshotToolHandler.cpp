@@ -3,6 +3,7 @@
 
 #include "BlueprintScreenshotToolHandler.h"
 #include "BlueprintEditor.h"
+#include "BlueprintScreenshotToolSettings.h"
 #include "BlueprintScreenshotToolTypes.h"
 #include "IImageWrapperModule.h"
 #include "ImageUtils.h"
@@ -29,7 +30,7 @@ void UBlueprintScreenshotToolHandler::TakeScreenshot()
 		{
 			auto [ColorData, Size] = CaptureGraphEditor(GraphEditor);
 			const auto ScreenshotDir = FPaths::ScreenShotDir();
-			const auto BaseName = FString(TEXT("GraphScreenshot"));
+			const auto BaseName = GetDefault<UBlueprintScreenshotToolSettings>()->ScreenshotBaseName;
 			const auto FileExtension = FString(TEXT("png"));
 			const auto Path = FPaths::Combine(ScreenshotDir, BaseName);
 			FString Filename;
@@ -53,6 +54,8 @@ FBSTScreenshotData UBlueprintScreenshotToolHandler::CaptureGraphEditor(TSharedPt
 	FVector2D WindowSize;
 	float ZoomAmount;
 
+	const auto* Settings = GetDefault<UBlueprintScreenshotToolSettings>();
+
 	InGraphEditor->GetViewLocation(CurrentViewLocation, ZoomAmount);
 
 	const auto& CachedGeometry = InGraphEditor->GetCachedGeometry();
@@ -65,8 +68,7 @@ FBSTScreenshotData UBlueprintScreenshotToolHandler::CaptureGraphEditor(TSharedPt
 	{
 		FSlateRect BoundsForSelectedNodes;
 		
-		// TODO BEST-2
-		InGraphEditor->GetBoundsForSelectedNodes(BoundsForSelectedNodes, 100.f);
+		InGraphEditor->GetBoundsForSelectedNodes(BoundsForSelectedNodes, Settings->ScreenshotPadding);
 		NewViewLocation = BoundsForSelectedNodes.GetTopLeft();
 		WindowSize = BoundsForSelectedNodes.GetSize();
 	}
@@ -78,10 +80,7 @@ FBSTScreenshotData UBlueprintScreenshotToolHandler::CaptureGraphEditor(TSharedPt
 
 	InGraphEditor->SetViewLocation(NewViewLocation, ZoomAmount);
 
-	// TODO BEST-2
-	const auto MinWindowSize = 32.f;
-	const auto MaxWindowSize = 15360.f;
-	WindowSize = WindowSize.ClampAxes(MinWindowSize, MaxWindowSize);
+	WindowSize = WindowSize.ClampAxes(Settings->MinScreenshotSize, Settings->MaxScreenshotSize);
 
 	InGraphEditor->ClearSelectionSet();
 
