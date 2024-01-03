@@ -23,19 +23,30 @@ void UBlueprintScreenshotToolHandler::TakeScreenshot()
 		return;
 	}
 
+	const auto bHasSelectedNodes = HasAnySelectedNodes(GraphEditors);
 	for (const auto GraphEditor : GraphEditors)
 	{
+		if (bHasSelectedNodes && GraphEditor->GetSelectedNodes().Num() <= 0)
+		{
+			continue;
+		}
+		
 		auto [ColorData, Size] = CaptureGraphEditor(GraphEditor);
-		const auto ScreenshotDir = FPaths::ScreenShotDir();
-		const auto BaseName = GetDefault<UBlueprintScreenshotToolSettings>()->ScreenshotBaseName;
-		const auto FileExtension = FString(TEXT("png"));
-		const auto Path = FPaths::Combine(ScreenshotDir, BaseName);
-		FString Filename;
-		FFileHelper::GenerateNextBitmapFilename(Path, FileExtension, Filename);
-
-		FImageView ImageView = FImageView(ColorData.GetData(), Size.X, Size.Y);
-		FImageUtils::SaveImageByExtension(*Filename, ImageView);
+		SaveScreenshot(ColorData, Size);
 	}
+}
+
+void UBlueprintScreenshotToolHandler::SaveScreenshot(const TArray<FColor>& InColorData, const FIntVector& InSize)
+{
+	const auto ScreenshotDir = FPaths::ScreenShotDir();
+	const auto BaseName = GetDefault<UBlueprintScreenshotToolSettings>()->ScreenshotBaseName;
+	const auto FileExtension = FString(TEXT("png"));
+	const auto Path = FPaths::Combine(ScreenshotDir, BaseName);
+	FString Filename;
+	FFileHelper::GenerateNextBitmapFilename(Path, FileExtension, Filename);
+
+	const FImageView ImageView = FImageView(InColorData.GetData(), InSize.X, InSize.Y);
+	FImageUtils::SaveImageByExtension(*Filename, ImageView);
 }
 
 FBSTScreenshotData UBlueprintScreenshotToolHandler::CaptureGraphEditor(TSharedPtr<SGraphEditor> InGraphEditor)
@@ -63,11 +74,11 @@ FBSTScreenshotData UBlueprintScreenshotToolHandler::CaptureGraphEditor(TSharedPt
 	if (SelectedNodes.Num() > 0)
 	{
 		FSlateRect BoundsForSelectedNodes;
-		
+
 		InGraphEditor->GetBoundsForSelectedNodes(BoundsForSelectedNodes, Settings->ScreenshotPadding);
 		NewViewLocation = BoundsForSelectedNodes.GetTopLeft();
 		WindowSize = BoundsForSelectedNodes.GetSize();
-		
+
 		InGraphEditor->SetViewLocation(NewViewLocation, Settings->ZoomAmount);
 	}
 	else
@@ -85,13 +96,13 @@ FBSTScreenshotData UBlueprintScreenshotToolHandler::CaptureGraphEditor(TSharedPt
 	const auto NewWindow = CreateTransparentWindowWithContent(WindowSize, InGraphEditor.ToSharedRef());
 	const bool bShowImmediately = false;
 	FSlateApplication::Get().AddWindow(NewWindow, bShowImmediately);
+	NewWindow->ShowWindow();
 
 	if (Settings->bNodeAppearanceFixup)
 	{
 		FixGraphNodesAppearance(InGraphEditor);
 	}
 
-	NewWindow->ShowWindow();
 
 	FBSTScreenshotData ScreenshotData;
 	FSlateApplication::Get().TakeScreenshot(NewWindow, ScreenshotData.ColorData, ScreenshotData.Size);
@@ -167,7 +178,7 @@ TSharedPtr<SWidget> UBlueprintScreenshotToolHandler::FindChild(TSharedPtr<SWidge
 			return Widget;
 		}
 	}
-	
+
 	return nullptr;
 }
 
@@ -219,7 +230,7 @@ TSet<TSharedPtr<SGraphEditor>> UBlueprintScreenshotToolHandler::FindGraphEditors
 
 	Algo::Transform(Widgets, GraphEditors, [](TSharedPtr<SWidget> Widget) { return StaticCastSharedPtr<SGraphEditor>(Widget); });
 	Algo::RemoveIf(GraphEditors, [](TSharedPtr<SGraphEditor> GraphEditor) { return !GraphEditor.IsValid(); });
-	
+
 	return TSet<TSharedPtr<SGraphEditor>>(GraphEditors);
 }
 
@@ -239,7 +250,7 @@ TSharedRef<SWindow> UBlueprintScreenshotToolHandler::CreateTransparentWindowWith
 {
 	auto Window = CreateTransparentWindow(InWindowSize);
 	Window->SetContent(InContent);
-	
+
 	return Window;
 }
 
@@ -256,4 +267,17 @@ void UBlueprintScreenshotToolHandler::FixGraphNodesAppearance(TSharedPtr<SGraphE
 {
 	InGraphEditor->Invalidate(EInvalidateWidgetReason::Paint);
 	FSlateApplication::Get().Tick();
+}
+
+bool UBlueprintScreenshotToolHandler::HasAnySelectedNodes(const TSet<TSharedPtr<SGraphEditor>>& InGraphEditors)
+{
+	for (const auto& GraphEditor : InGraphEditors)
+	{
+		if (GraphEditor->GetSelectedNodes().Num() > 0)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
