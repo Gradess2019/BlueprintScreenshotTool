@@ -16,6 +16,9 @@ class BLUEPRINTSCREENSHOTTOOL_API UBlueprintScreenshotToolSettings : public UObj
 
 public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Blueprint Screenshot Tool")
+	FString ScreenshotBaseName = FString(TEXT("GraphScreenshot"));
+	
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Blueprint Screenshot Tool")
 	float ScreenshotPadding = 128.f;
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Blueprint Screenshot Tool")
@@ -24,6 +27,11 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Blueprint Screenshot Tool")
 	float MaxScreenshotSize = 15360.f;
 
+	// Default zoom amount that is used when taking screenshot of selected nodes
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Blueprint Screenshot Tool")
-	FString ScreenshotBaseName = FString(TEXT("GraphScreenshot"));
+	float ZoomAmount = 1.f;
+
+	// If true, the node appearance will be fixed up before taking the screenshot. Causes a slight flicker.
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Blueprint Screenshot Tool")
+	bool bNodeAppearanceFixup = true;
 };

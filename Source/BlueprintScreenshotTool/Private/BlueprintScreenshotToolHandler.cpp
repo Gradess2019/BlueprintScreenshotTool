@@ -52,11 +52,11 @@ FBSTScreenshotData UBlueprintScreenshotToolHandler::CaptureGraphEditor(TSharedPt
 	FVector2D CurrentViewLocation;
 	FVector2D NewViewLocation;
 	FVector2D WindowSize;
-	float ZoomAmount;
+	float CachedZoomAmount;
 
 	const auto* Settings = GetDefault<UBlueprintScreenshotToolSettings>();
 
-	InGraphEditor->GetViewLocation(CurrentViewLocation, ZoomAmount);
+	InGraphEditor->GetViewLocation(CurrentViewLocation, CachedZoomAmount);
 
 	const auto& CachedGeometry = InGraphEditor->GetCachedGeometry();
 	const auto SizeOfWidget = CachedGeometry.GetLocalSize();
@@ -71,32 +71,36 @@ FBSTScreenshotData UBlueprintScreenshotToolHandler::CaptureGraphEditor(TSharedPt
 		InGraphEditor->GetBoundsForSelectedNodes(BoundsForSelectedNodes, Settings->ScreenshotPadding);
 		NewViewLocation = BoundsForSelectedNodes.GetTopLeft();
 		WindowSize = BoundsForSelectedNodes.GetSize();
+		
+		InGraphEditor->SetViewLocation(NewViewLocation, Settings->ZoomAmount);
 	}
 	else
 	{
 		NewViewLocation = CurrentViewLocation;
 		WindowSize = SizeOfWidget * DPIScale;
-	}
 
-	InGraphEditor->SetViewLocation(NewViewLocation, ZoomAmount);
+		InGraphEditor->SetViewLocation(NewViewLocation, CachedZoomAmount);
+	}
 
 	WindowSize = WindowSize.ClampAxes(Settings->MinScreenshotSize, Settings->MaxScreenshotSize);
 
 	InGraphEditor->ClearSelectionSet();
 
-	auto NewWindow = CreateTransparentWindowWithContent(WindowSize, InGraphEditor.ToSharedRef());
-
+	const auto NewWindow = CreateTransparentWindowWithContent(WindowSize, InGraphEditor.ToSharedRef());
 	const bool bShowImmediately = false;
-	// auto WidgetWindow = FSlateApplication::Get().FindWidgetWindow(InGraphEditor.ToSharedRef());
 	FSlateApplication::Get().AddWindow(NewWindow, bShowImmediately);
 
-	InGraphEditor->Invalidate(EInvalidateWidgetReason::LayoutAndVolatility);
+	if (Settings->bNodeAppearanceFixup)
+	{
+		FixGraphNodesAppearance(InGraphEditor);
+	}
+
 	NewWindow->ShowWindow();
 
 	FBSTScreenshotData ScreenshotData;
 	FSlateApplication::Get().TakeScreenshot(NewWindow, ScreenshotData.ColorData, ScreenshotData.Size);
 
-	InGraphEditor->SetViewLocation(CurrentViewLocation, ZoomAmount);
+	InGraphEditor->SetViewLocation(CurrentViewLocation, CachedZoomAmount);
 
 	for (auto* SelectedNode : SelectedNodes)
 	{
@@ -108,6 +112,11 @@ FBSTScreenshotData UBlueprintScreenshotToolHandler::CaptureGraphEditor(TSharedPt
 
 	NewWindow->HideWindow();
 	NewWindow->RequestDestroyWindow();
+
+	if (Settings->bNodeAppearanceFixup)
+	{
+		FixGraphNodesAppearance(InGraphEditor);
+	}
 
 	return ScreenshotData;
 }
@@ -241,4 +250,10 @@ void UBlueprintScreenshotToolHandler::ShowWindow(TSharedRef<SWindow> InWindow)
 
 	InWindow->ShowWindow();
 	InWindow->Invalidate(EInvalidateWidgetReason::LayoutAndVolatility);
+}
+
+void UBlueprintScreenshotToolHandler::FixGraphNodesAppearance(TSharedPtr<SGraphEditor> InGraphEditor)
+{
+	InGraphEditor->Invalidate(EInvalidateWidgetReason::Paint);
+	FSlateApplication::Get().Tick();
 }

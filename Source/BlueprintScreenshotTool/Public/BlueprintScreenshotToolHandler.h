@@ -30,4 +30,5 @@ protected:
 	static TSharedRef<SWindow> CreateTransparentWindow(const FVector2D& InWindowSize);
 	static TSharedRef<SWindow> CreateTransparentWindowWithContent(const FVector2D& InWindowSize, TSharedRef<SWidget> InContent);
 	static void ShowWindow(TSharedRef<SWindow> InWindow);
+	static void FixGraphNodesAppearance(TSharedPtr<SGraphEditor> InGraphEditor);
 };
