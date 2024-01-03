@@ -19,16 +19,18 @@ class BLUEPRINTSCREENSHOTTOOL_API UBlueprintScreenshotToolHandler : public UObje
 
 public:
 	static void TakeScreenshot();
+	static void SaveScreenshot(const TArray<FColor>& InColorData, const FIntVector& InSize);
 	static FBSTScreenshotData CaptureGraphEditor(TSharedPtr<SGraphEditor> InGraphEditor);
 
 	static TSharedPtr<SWidget> FindParent(TSharedPtr<SWidget> InWidget, const FName& InParentWidgetType);
 	static TSharedPtr<SWidget> FindChild(TSharedPtr<SWidget> InWidget, const FName& InChildWidgetType);
 	static TSet<TSharedPtr<SWidget>> FindChildren(TSharedPtr<SWidget> InWidget, const FName& InChildWidgetType);
-	static TSet<TSharedPtr<SWidget>> FindGraphEditors();
+	static TSet<TSharedPtr<SGraphEditor>> FindGraphEditors();
 
 protected:
 	static TSharedRef<SWindow> CreateTransparentWindow(const FVector2D& InWindowSize);
 	static TSharedRef<SWindow> CreateTransparentWindowWithContent(const FVector2D& InWindowSize, TSharedRef<SWidget> InContent);
 	static void ShowWindow(TSharedRef<SWindow> InWindow);
 	static void FixGraphNodesAppearance(TSharedPtr<SGraphEditor> InGraphEditor);
+	static bool HasAnySelectedNodes(const TSet<TSharedPtr<SGraphEditor>>& InGraphEditors);
 };
