@@ -87,14 +87,14 @@ FBSTScreenshotData UBlueprintScreenshotToolHandler::CaptureGraphEditor(TSharedPt
 	InGraphEditor->ClearSelectionSet();
 
 	const auto NewWindow = CreateTransparentWindowWithContent(WindowSize, InGraphEditor.ToSharedRef());
-	
-
 	const bool bShowImmediately = false;
-	// auto WidgetWindow = FSlateApplication::Get().FindWidgetWindow(InGraphEditor.ToSharedRef());
 	FSlateApplication::Get().AddWindow(NewWindow, bShowImmediately);
-	FSlateApplication::Get().Tick();
 
-	InGraphEditor->Invalidate(EInvalidateWidgetReason::Paint);
+	if (Settings->bNodeAppearanceFixup)
+	{
+		FixGraphNodesAppearance(InGraphEditor);
+	}
+
 	NewWindow->ShowWindow();
 
 	FBSTScreenshotData ScreenshotData;
@@ -112,6 +112,11 @@ FBSTScreenshotData UBlueprintScreenshotToolHandler::CaptureGraphEditor(TSharedPt
 
 	NewWindow->HideWindow();
 	NewWindow->RequestDestroyWindow();
+
+	if (Settings->bNodeAppearanceFixup)
+	{
+		FixGraphNodesAppearance(InGraphEditor);
+	}
 
 	return ScreenshotData;
 }
@@ -245,4 +250,10 @@ void UBlueprintScreenshotToolHandler::ShowWindow(TSharedRef<SWindow> InWindow)
 
 	InWindow->ShowWindow();
 	InWindow->Invalidate(EInvalidateWidgetReason::LayoutAndVolatility);
+}
+
+void UBlueprintScreenshotToolHandler::FixGraphNodesAppearance(TSharedPtr<SGraphEditor> InGraphEditor)
+{
+	InGraphEditor->Invalidate(EInvalidateWidgetReason::Paint);
+	FSlateApplication::Get().Tick();
 }
