@@ -24,7 +24,7 @@ public:
 	static TSharedPtr<SWidget> FindParent(TSharedPtr<SWidget> InWidget, const FName& InParentWidgetType);
 	static TSharedPtr<SWidget> FindChild(TSharedPtr<SWidget> InWidget, const FName& InChildWidgetType);
 	static TSet<TSharedPtr<SWidget>> FindChildren(TSharedPtr<SWidget> InWidget, const FName& InChildWidgetType);
-	static TSet<TSharedPtr<SWidget>> FindGraphEditors();
+	static TSet<TSharedPtr<SGraphEditor>> FindGraphEditors();
 
 protected:
 	static TSharedRef<SWindow> CreateTransparentWindow(const FVector2D& InWindowSize);

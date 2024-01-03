@@ -9,6 +9,7 @@
 #include "ImageUtils.h"
 #include "ImageWriteQueue.h"
 #include "ImageWriteTask.h"
+#include "Algo/RemoveIf.h"
 #include "HAL/PlatformApplicationMisc.h"
 #include "Misc/FileHelper.h"
 
@@ -22,23 +23,18 @@ void UBlueprintScreenshotToolHandler::TakeScreenshot()
 		return;
 	}
 
-	auto Widget = GraphEditors[FSetElementId::FromInteger(0)];
-	if (Widget.IsValid())
+	for (const auto GraphEditor : GraphEditors)
 	{
-		auto GraphEditor = StaticCastSharedPtr<SGraphEditor>(Widget);
-		if (GraphEditor.IsValid())
-		{
-			auto [ColorData, Size] = CaptureGraphEditor(GraphEditor);
-			const auto ScreenshotDir = FPaths::ScreenShotDir();
-			const auto BaseName = GetDefault<UBlueprintScreenshotToolSettings>()->ScreenshotBaseName;
-			const auto FileExtension = FString(TEXT("png"));
-			const auto Path = FPaths::Combine(ScreenshotDir, BaseName);
-			FString Filename;
-			FFileHelper::GenerateNextBitmapFilename(Path, FileExtension, Filename);
+		auto [ColorData, Size] = CaptureGraphEditor(GraphEditor);
+		const auto ScreenshotDir = FPaths::ScreenShotDir();
+		const auto BaseName = GetDefault<UBlueprintScreenshotToolSettings>()->ScreenshotBaseName;
+		const auto FileExtension = FString(TEXT("png"));
+		const auto Path = FPaths::Combine(ScreenshotDir, BaseName);
+		FString Filename;
+		FFileHelper::GenerateNextBitmapFilename(Path, FileExtension, Filename);
 
-			FImageView ImageView = FImageView(ColorData.GetData(), Size.X, Size.Y);
-			FImageUtils::SaveImageByExtension(*Filename, ImageView);
-		}
+		FImageView ImageView = FImageView(ColorData.GetData(), Size.X, Size.Y);
+		FImageUtils::SaveImageByExtension(*Filename, ImageView);
 	}
 }
 
@@ -209,7 +205,7 @@ TSet<TSharedPtr<SWidget>> UBlueprintScreenshotToolHandler::FindChildren(TSharedP
 }
 
 
-TSet<TSharedPtr<SWidget>> UBlueprintScreenshotToolHandler::FindGraphEditors()
+TSet<TSharedPtr<SGraphEditor>> UBlueprintScreenshotToolHandler::FindGraphEditors()
 {
 	const auto ActiveTab = FGlobalTabmanager::Get()->GetActiveTab();
 	const auto StandaloneAssetEditorToolkitHost = FindParent(ActiveTab, TEXT("SStandaloneAssetEditorToolkitHost"));
@@ -218,9 +214,13 @@ TSet<TSharedPtr<SWidget>> UBlueprintScreenshotToolHandler::FindGraphEditors()
 		return {};
 	}
 
-	const auto GraphEditors = FindChildren(StandaloneAssetEditorToolkitHost, TEXT("SGraphEditorImpl"));
+	const auto Widgets = FindChildren(StandaloneAssetEditorToolkitHost, TEXT("SGraphEditorImpl"));
+	TArray<TSharedPtr<SGraphEditor>> GraphEditors;
 
-	return GraphEditors;
+	Algo::Transform(Widgets, GraphEditors, [](TSharedPtr<SWidget> Widget) { return StaticCastSharedPtr<SGraphEditor>(Widget); });
+	Algo::RemoveIf(GraphEditors, [](TSharedPtr<SGraphEditor> GraphEditor) { return !GraphEditor.IsValid(); });
+	
+	return TSet<TSharedPtr<SGraphEditor>>(GraphEditors);
 }
 
 TSharedRef<SWindow> UBlueprintScreenshotToolHandler::CreateTransparentWindow(const FVector2D& InWindowSize)
