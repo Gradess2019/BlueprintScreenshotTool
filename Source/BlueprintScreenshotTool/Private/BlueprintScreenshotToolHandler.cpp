@@ -23,6 +23,33 @@ void UBlueprintScreenshotToolHandler::TakeScreenshot()
 		return;
 	}
 
+	const auto Windows = FSlateApplication::Get().GetTopLevelWindows();
+	for (auto Window : Windows)
+	{
+		const auto BlueprintDiff = FindChild(Window, TEXT("SBlueprintDiff"));
+		if (!BlueprintDiff.IsValid())
+		{
+			continue;
+		}
+
+		const auto DiffToolBar = FindChild(BlueprintDiff, TEXT("SClippingHorizontalBox"));
+		if (!DiffToolBar.IsValid())
+		{
+			continue;
+		}
+
+		const auto TextBlocks = FindChildren(DiffToolBar, TEXT("STextBlock"));
+		for (auto TextBlock : TextBlocks)
+		{
+			const auto CastedTextBlock = StaticCastSharedPtr<STextBlock>(TextBlock);
+			if (CastedTextBlock.IsValid())
+			{
+				const auto Text = CastedTextBlock->GetText().ToString();
+				UE_LOG(LogTemp, Warning, TEXT("Text: %s"), *Text);
+			}
+		}
+	}
+
 	const auto bHasSelectedNodes = HasAnySelectedNodes(GraphEditors);
 	for (const auto GraphEditor : GraphEditors)
 	{
