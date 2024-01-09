@@ -9,6 +9,10 @@
 static const FVector2D Icon20x20(20.0f, 20.0f);
 static const FVector2D Icon40x40(40.0f, 40.0f);
 
+const FString FBlueprintScreenshotToolStyle::IconFileName(TEXT("BlueprintScreenshotTool"));
+const FName FBlueprintScreenshotToolStyle::IconName(TEXT("BlueprintScreenshotTool.TakeScreenshot"));
+const FName FBlueprintScreenshotToolStyle::IconNameSmall(TEXT("BlueprintScreenshotTool.TakeScreenshot.Small"));
+
 TSharedPtr<FBlueprintScreenshotToolStyle::FStyle> FBlueprintScreenshotToolStyle::StyleInstance = nullptr;
 
 FBlueprintScreenshotToolStyle::FStyle::FStyle() : FSlateStyleSet(FBlueprintScreenshotToolStyle::GetStyleSetName())
@@ -22,8 +26,8 @@ void FBlueprintScreenshotToolStyle::FStyle::Initialize()
 	const auto ResourcesDir = Plugin->GetBaseDir() / TEXT("Resources");
 
 	StyleInstance->SetContentRoot(ResourcesDir);
-	StyleInstance->Set("BlueprintScreenshotTool.TakeScreenshot", new IMAGE_BRUSH_SVG(TEXT("BlueprintScreenshotTool"), Icon40x40));
-	StyleInstance->Set("BlueprintScreenshotTool.TakeScreenshot.Small", new IMAGE_BRUSH_SVG(TEXT("BlueprintScreenshotTool"), Icon20x20));
+	StyleInstance->Set(IconName, new IMAGE_BRUSH_SVG(IconFileName, Icon40x40));
+	StyleInstance->Set(IconNameSmall, new IMAGE_BRUSH_SVG(IconFileName, Icon20x20));
 
 	FSlateStyleRegistry::RegisterSlateStyle(*StyleInstance);
 }
