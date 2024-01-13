@@ -34,4 +34,17 @@ public:
 	// If true, the node appearance will be fixed up before taking the screenshot. Causes a slight flicker.
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Blueprint Screenshot Tool")
 	bool bNodeAppearanceFixup = true;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Blueprint Screenshot Tool | Developer Mode")
+	bool bDeveloperMode = true;
+
+	// The text is used for searching Blueprint Diff toolbar buttons to inject "Take Screenshot" button
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Blueprint Screenshot Tool | Developer Mode")
+	TSet<FName> DiffToolbarTexts = { FName(TEXT("Lock/Unlock")), FName(TEXT("Vertical/Horizontal")) };
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Blueprint Screenshot Tool | Developer Mode")
+	FText DiffWindowButtonLabel = FText::FromString(TEXT("Take Screenshot"));
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Blueprint Screenshot Tool | Developer Mode")
+	FText DiffWindowButtonToolTip = FText(); 
 };
