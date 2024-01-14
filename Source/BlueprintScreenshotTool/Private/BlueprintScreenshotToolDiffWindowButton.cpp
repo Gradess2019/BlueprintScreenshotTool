@@ -1,8 +1,7 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Copyright 2024 Gradess Games. All Rights Reserved.
 
 
 #include "BlueprintScreenshotToolDiffWindowButton.h"
-
 #include "BlueprintScreenshotToolHandler.h"
 #include "BlueprintScreenshotToolSettings.h"
 #include "BlueprintScreenshotToolStyle.h"
