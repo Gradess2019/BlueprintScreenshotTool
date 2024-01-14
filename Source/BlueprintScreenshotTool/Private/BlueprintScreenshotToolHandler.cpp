@@ -73,15 +73,18 @@ void UBlueprintScreenshotToolHandler::TakeScreenshot()
 
 FString UBlueprintScreenshotToolHandler::SaveScreenshot(const TArray<FColor>& InColorData, const FIntVector& InSize)
 {
+	const auto* Settings = GetDefault<UBlueprintScreenshotToolSettings>();
 	const auto ScreenshotDir = FPaths::ScreenShotDir();
-	const auto BaseName = GetDefault<UBlueprintScreenshotToolSettings>()->ScreenshotBaseName;
-	const auto FileExtension = FString(TEXT("png"));
+	const auto& BaseName = Settings->ScreenshotBaseName;
+	const auto FileExtension = GetExtension(Settings->Extension);
 	const auto Path = FPaths::Combine(ScreenshotDir, BaseName);
+	
 	FString Filename;
 	FFileHelper::GenerateNextBitmapFilename(Path, FileExtension, Filename);
 
 	const auto ImageView = FImageView(InColorData.GetData(), InSize.X, InSize.Y);
-	const auto bSuccess = FImageUtils::SaveImageByExtension(*Filename, ImageView);
+	const auto Quality = Settings->Extension == EBSTImageFormat::JPG ? Settings->Quality : 0;
+	const auto bSuccess = FImageUtils::SaveImageByExtension(*Filename, ImageView, Quality);
 
 	return bSuccess ? Filename : FString();
 }
@@ -226,7 +229,7 @@ void UBlueprintScreenshotToolHandler::ShowNotification(const TArray<FString>& In
 
 	FNotificationInfo NotificationInfo(Message);
 	NotificationInfo.ExpireDuration = Settings->ExpireDuration;
-	NotificationInfo.bFireAndForget = !Settings->bPersistentNotification;
+	NotificationInfo.bFireAndForget = true;
 	NotificationInfo.bUseSuccessFailIcons = Settings->bUseSuccessFailIcons;
 
 	FString HyperLinkText;
@@ -245,4 +248,20 @@ void UBlueprintScreenshotToolHandler::ShowNotification(const TArray<FString>& In
 
 	const auto Notification = FSlateNotificationManager::Get().AddNotification(NotificationInfo);
 	Notification->SetCompletionState(SNotificationItem::CS_Success);
+}
+
+FString UBlueprintScreenshotToolHandler::GetExtension(EBSTImageFormat InFormat)
+{
+	switch (InFormat)
+	{
+	case EBSTImageFormat::PNG:
+		return TEXT("png");
+	case EBSTImageFormat::JPG:
+		return TEXT("jpg");
+	case EBSTImageFormat::BMP:
+		return TEXT("bmp");
+	default:
+		checkf(false, TEXT("Unknown image format"));
+		return TEXT("png");
+	}
 }

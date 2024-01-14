@@ -8,6 +8,7 @@
 
 
 struct FBSTScreenshotData;
+enum class EBSTImageFormat : uint8;
 
 /**
  * 
@@ -32,4 +33,5 @@ protected:
 	static void FixGraphNodesAppearance(TSharedPtr<SGraphEditor> InGraphEditor);
 	static bool HasAnySelectedNodes(const TSet<TSharedPtr<SGraphEditor>>& InGraphEditors);
 	static void ShowNotification(const TArray<FString>& InPaths);
+	static FString GetExtension(EBSTImageFormat InFormat);
 };

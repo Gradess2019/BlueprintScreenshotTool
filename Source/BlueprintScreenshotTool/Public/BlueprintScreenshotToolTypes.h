@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "IImageWrapper.h"
 #include "BlueprintScreenshotToolTypes.generated.h"
 
 USTRUCT(BlueprintType)
@@ -20,4 +21,12 @@ struct FBSTScreenshotData
 	{
 		return FIntPoint(Size.X, Size.Y);
 	}
+};
+
+UENUM()
+enum class EBSTImageFormat : uint8
+{
+	PNG = EImageFormat::PNG,
+	JPG = EImageFormat::JPEG,
+	BMP = EImageFormat::BMP,
 };
