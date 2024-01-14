@@ -16,13 +16,15 @@
 
 struct FWidgetSnapshotTextureData;
 
-void UBlueprintScreenshotToolHandler::TakeScreenshot()
+TArray<FString> UBlueprintScreenshotToolHandler::TakeScreenshotWithPaths()
 {
 	auto GraphEditors = UBlueprintScreenshotToolWindowManager::FindActiveGraphEditors();
 	if (GraphEditors.Num() <= 0)
 	{
-		return;
+		return {};
 	}
+
+	TArray<FString> Paths;
 
 	const auto bHasSelectedNodes = HasAnySelectedNodes(GraphEditors);
 	for (const auto GraphEditor : GraphEditors)
@@ -33,11 +35,22 @@ void UBlueprintScreenshotToolHandler::TakeScreenshot()
 		}
 
 		auto [ColorData, Size] = CaptureGraphEditor(GraphEditor);
-		SaveScreenshot(ColorData, Size);
+		const auto Path = SaveScreenshot(ColorData, Size);
+		if (!Path.IsEmpty())
+		{
+			Paths.Add(Path);
+		}
 	}
+
+	return Paths; 
 }
 
-void UBlueprintScreenshotToolHandler::SaveScreenshot(const TArray<FColor>& InColorData, const FIntVector& InSize)
+void UBlueprintScreenshotToolHandler::TakeScreenshot()
+{
+	TakeScreenshotWithPaths();
+}
+
+FString UBlueprintScreenshotToolHandler::SaveScreenshot(const TArray<FColor>& InColorData, const FIntVector& InSize)
 {
 	const auto ScreenshotDir = FPaths::ScreenShotDir();
 	const auto BaseName = GetDefault<UBlueprintScreenshotToolSettings>()->ScreenshotBaseName;
@@ -46,8 +59,10 @@ void UBlueprintScreenshotToolHandler::SaveScreenshot(const TArray<FColor>& InCol
 	FString Filename;
 	FFileHelper::GenerateNextBitmapFilename(Path, FileExtension, Filename);
 
-	const FImageView ImageView = FImageView(InColorData.GetData(), InSize.X, InSize.Y);
-	FImageUtils::SaveImageByExtension(*Filename, ImageView);
+	const auto ImageView = FImageView(InColorData.GetData(), InSize.X, InSize.Y);
+	const auto bSuccess = FImageUtils::SaveImageByExtension(*Filename, ImageView);
+
+	return bSuccess ? Filename : FString();
 }
 
 FBSTScreenshotData UBlueprintScreenshotToolHandler::CaptureGraphEditor(TSharedPtr<SGraphEditor> InGraphEditor)

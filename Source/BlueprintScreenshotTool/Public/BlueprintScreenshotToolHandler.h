@@ -18,8 +18,10 @@ class BLUEPRINTSCREENSHOTTOOL_API UBlueprintScreenshotToolHandler : public UObje
 	GENERATED_BODY()
 
 public:
+	static TArray<FString> TakeScreenshotWithPaths();
 	static void TakeScreenshot();
-	static void SaveScreenshot(const TArray<FColor>& InColorData, const FIntVector& InSize);
+	
+	static FString SaveScreenshot(const TArray<FColor>& InColorData, const FIntVector& InSize);
 	static FBSTScreenshotData CaptureGraphEditor(TSharedPtr<SGraphEditor> InGraphEditor);
 
 protected:
