@@ -16,7 +16,4 @@ public:
 	}
 
 	FBlueprintScreenshotToolDiffWindowButton();
-
-private:
-	void TakeScreenshot();
 };

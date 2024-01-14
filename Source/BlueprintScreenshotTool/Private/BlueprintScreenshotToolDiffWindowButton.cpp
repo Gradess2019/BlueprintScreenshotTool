@@ -3,6 +3,7 @@
 
 #include "BlueprintScreenshotToolDiffWindowButton.h"
 
+#include "BlueprintScreenshotToolHandler.h"
 #include "BlueprintScreenshotToolSettings.h"
 #include "BlueprintScreenshotToolStyle.h"
 
@@ -10,12 +11,8 @@ FBlueprintScreenshotToolDiffWindowButton::FBlueprintScreenshotToolDiffWindowButt
 	GetDefault<UBlueprintScreenshotToolSettings>()->DiffWindowButtonLabel,
 	GetDefault<UBlueprintScreenshotToolSettings>()->DiffWindowButtonToolTip,
 	FSlateIcon(FBlueprintScreenshotToolStyle::GetStyleSetName(), FBlueprintScreenshotToolStyle::IconNameSmall),
-	FUIAction(FExecuteAction::CreateRaw(this, &FBlueprintScreenshotToolDiffWindowButton::TakeScreenshot)),
+	FUIAction(FExecuteAction::CreateStatic(&UBlueprintScreenshotToolHandler::TakeScreenshot)),
 	EUserInterfaceActionType::Button
 )
-{
-}
-
-void FBlueprintScreenshotToolDiffWindowButton::TakeScreenshot()
 {
 }

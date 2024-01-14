@@ -40,7 +40,7 @@ public:
 
 	// The text is used for searching Blueprint Diff toolbar buttons to inject "Take Screenshot" button
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Blueprint Screenshot Tool | Developer Mode")
-	TSet<FName> DiffToolbarTexts = { FName(TEXT("Lock/Unlock")), FName(TEXT("Vertical/Horizontal")) };
+	TArray<FText> DiffToolbarTexts = { FText::FromString(TEXT("Lock/Unlock")), FText::FromString(TEXT("Vertical/Horizontal")) };
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Blueprint Screenshot Tool | Developer Mode")
 	FText DiffWindowButtonLabel = FText::FromString(TEXT("Take Screenshot"));
