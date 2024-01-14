@@ -61,7 +61,14 @@ TArray<FString> UBlueprintScreenshotToolHandler::TakeScreenshotWithNotification(
 
 void UBlueprintScreenshotToolHandler::TakeScreenshot()
 {
-	TakeScreenshotWithNotification();
+	if (GetDefault<UBlueprintScreenshotToolSettings>()->bShowNotification)
+	{
+		TakeScreenshotWithNotification();
+	}
+	else
+	{
+		TakeScreenshotWithPaths();
+	}
 }
 
 FString UBlueprintScreenshotToolHandler::SaveScreenshot(const TArray<FColor>& InColorData, const FIntVector& InSize)
