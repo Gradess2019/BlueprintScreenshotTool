@@ -19,6 +19,7 @@ class BLUEPRINTSCREENSHOTTOOL_API UBlueprintScreenshotToolHandler : public UObje
 
 public:
 	static TArray<FString> TakeScreenshotWithPaths();
+	static TArray<FString> TakeScreenshotWithNotification();
 	static void TakeScreenshot();
 	
 	static FString SaveScreenshot(const TArray<FColor>& InColorData, const FIntVector& InSize);
@@ -30,4 +31,5 @@ protected:
 	static void ShowWindow(TSharedRef<SWindow> InWindow);
 	static void FixGraphNodesAppearance(TSharedPtr<SGraphEditor> InGraphEditor);
 	static bool HasAnySelectedNodes(const TSet<TSharedPtr<SGraphEditor>>& InGraphEditors);
+	static void ShowNotification(const TArray<FString>& InPaths);
 };
