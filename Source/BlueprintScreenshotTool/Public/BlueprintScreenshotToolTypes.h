@@ -25,7 +25,7 @@ struct BLUEPRINTSCREENSHOTTOOL_API FBSTScreenshotData
 };
 
 UENUM()
-enum class BLUEPRINTSCREENSHOTTOOL_API EBSTImageFormat : uint8
+enum class EBSTImageFormat : uint8
 {
 	PNG = EImageFormat::PNG,
 	JPG = EImageFormat::JPEG,
