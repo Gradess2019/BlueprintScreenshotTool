@@ -1,7 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "BlueprintScreenshotToolModule.h"
 
+#include "BlueprintScreenshotToolModule.h"
 #include "BlueprintScreenshotToolCommandManager.h"
 #include "BlueprintScreenshotToolSettings.h"
 #include "BlueprintScreenshotToolStyle.h"

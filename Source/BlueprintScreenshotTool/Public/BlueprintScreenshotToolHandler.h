@@ -1,5 +1,6 @@
 // Copyright 2024 Gradess Games. All Rights Reserved.
 
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -10,9 +11,6 @@
 struct FBSTScreenshotData;
 enum class EBSTImageFormat : uint8;
 
-/**
- * 
- */
 UCLASS()
 class BLUEPRINTSCREENSHOTTOOL_API UBlueprintScreenshotToolHandler : public UObject
 {
@@ -22,7 +20,7 @@ public:
 	static TArray<FString> TakeScreenshotWithPaths();
 	static TArray<FString> TakeScreenshotWithNotification();
 	static void TakeScreenshot();
-	
+
 	static FString SaveScreenshot(const TArray<FColor>& InColorData, const FIntVector& InSize);
 	static FBSTScreenshotData CaptureGraphEditor(TSharedPtr<SGraphEditor> InGraphEditor);
 

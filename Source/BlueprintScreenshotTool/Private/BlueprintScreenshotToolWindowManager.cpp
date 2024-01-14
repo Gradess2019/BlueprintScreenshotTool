@@ -2,7 +2,6 @@
 
 
 #include "BlueprintScreenshotToolWindowManager.h"
-
 #include "BlueprintScreenshotToolDiffWindowButton.h"
 #include "BlueprintScreenshotToolSettings.h"
 #include "SBlueprintDiff.h"
@@ -123,7 +122,7 @@ TSet<TSharedPtr<SGraphEditor>> UBlueprintScreenshotToolWindowManager::FindActive
 	{
 		return {};
 	}
-	
+
 	return FindGraphEditors(ActiveTab.ToSharedRef());
 }
 
@@ -194,7 +193,7 @@ void UBlueprintScreenshotToolWindowManager::AddButtonToDiffWindow(TSharedRef<SBl
 		{
 			const auto& ButtonText = TextBlock->GetText();
 			const auto NumRemovedElems = ToolbarTextToCheck.RemoveAll([ButtonText](const FText& InText) { return InText.EqualToCaseIgnored(ButtonText); });
-			
+
 			if (NumRemovedElems == 0 && !bTakeScreenshotButtonExists)
 			{
 				const auto Label = GetDefault<UBlueprintScreenshotToolSettings>()->DiffWindowButtonLabel;

@@ -4,7 +4,6 @@
 #include "BlueprintScreenshotToolCommandManager.h"
 #include "BlueprintScreenshotToolCommands.h"
 #include "BlueprintScreenshotToolHandler.h"
-
 #include "Toolkits/AssetEditorToolkit.h"
 
 void FBlueprintScreenshotToolCommandManager::RegisterCommands()

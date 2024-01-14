@@ -1,5 +1,6 @@
 // Copyright 2024 Gradess Games. All Rights Reserved.
 
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -9,7 +10,7 @@ class BLUEPRINTSCREENSHOTTOOL_API FBlueprintScreenshotToolCommandManager
 private:
 	TSharedPtr<FUICommandList> CommandList;
 	TSharedPtr<FExtender> ToolbarExtension;
-	
+
 public:
 	void RegisterCommands();
 	void UnregisterCommands();

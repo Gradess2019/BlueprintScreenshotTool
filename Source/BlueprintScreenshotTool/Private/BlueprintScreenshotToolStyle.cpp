@@ -1,5 +1,6 @@
 // Copyright 2024 Gradess Games. All Rights Reserved.
 
+
 #include "BlueprintScreenshotToolStyle.h"
 #include "Interfaces/IPluginManager.h"
 #include "Styling/SlateStyleRegistry.h"
