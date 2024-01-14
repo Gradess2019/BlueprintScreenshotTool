@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BlueprintScreenshotToolTypes.h"
 #include "UObject/Object.h"
 #include "BlueprintScreenshotToolSettings.generated.h"
 
@@ -15,15 +16,27 @@ class BLUEPRINTSCREENSHOTTOOL_API UBlueprintScreenshotToolSettings : public UObj
 	GENERATED_BODY()
 
 public:
+	// Base name of the screenshot. The number will be appended to the end of the name.
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool")
 	FString ScreenshotBaseName = FString(TEXT("GraphScreenshot"));
-	
+
+	// Screenshot file format
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool")
+	EBSTImageFormat Extension = EBSTImageFormat::PNG;
+
+	// Quality of jpg image. 10-100
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool", meta = (EditCondition = "Extension == EBSTImageFormat::JPG", ClampMin = "10", ClampMax = "100", UIMin = "10", UIMax = "100"))
+	int32 Quality = 100;
+
+	// Padding around graph nodes in pixels when taking screenshot
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool")
 	float ScreenshotPadding = 128.f;
 
+	// Minimum screenshot size in pixels
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool")
 	float MinScreenshotSize = 128.f;
 
+	// Maximum screenshot size in pixels
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool")
 	float MaxScreenshotSize = 15360.f;
 
@@ -35,33 +48,31 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool")
 	bool bNodeAppearanceFixup = true;
 
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool")
+	// If true, the notification with hyperlink to the screenshot will be shown after taking the screenshot
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool|Notification")
 	bool bShowNotification = true;
+	
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool|Notification")
+	FText NotificationMessageFormat = FText::FromString("{Count}|plural(one=Screenshot,other=Screenshots) taken: ");
 
+	// How long the notification will be shown in seconds
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool|Notification")
+	float ExpireDuration = 5.f;
+
+	// If true, the notification will use success/fail icons instead of the default info icon
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool|Notification")
+	bool bUseSuccessFailIcons = true;
+	
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool|DeveloperMode")
 	bool bDeveloperMode = false;
 
 	// The text is used for searching Blueprint Diff toolbar buttons to inject "Take Screenshot" button
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool|DeveloperMode|Diff", meta = (EditCondition = "bDeveloperMode"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool|DeveloperMode", meta = (EditCondition = "bDeveloperMode"))
 	TArray<FText> DiffToolbarTexts = { FText::FromString(TEXT("Lock/Unlock")), FText::FromString(TEXT("Vertical/Horizontal")) };
 
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool|DeveloperMode|Diff", meta = (EditCondition = "bDeveloperMode"))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool|DeveloperMode", meta = (EditCondition = "bDeveloperMode"))
 	FText DiffWindowButtonLabel = FText::FromString(TEXT("Take Screenshot"));
 
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool|DeveloperMode|Diff", meta = (EditCondition = "bDeveloperMode"))
-	FText DiffWindowButtonToolTip = FText();
-
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool|DeveloperMode|Notification", meta = (EditCondition = "bDeveloperMode"))
-	FText NotificationMessageFormat = FText::FromString("{Count}|plural(one=Screenshot,other=Screenshots) taken: ");
-
-	// If true, the notification will be persistent until manually closed
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool|DeveloperMode|Notification", meta = (EditCondition = "bDeveloperMode"))
-	bool bPersistentNotification = false;
-
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool|DeveloperMode|Notification", meta = (EditCondition = "bDeveloperMode && !bPersistentNotification"))
-	float ExpireDuration = 5.f;
-
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool|DeveloperMode|Notification", meta = (EditCondition = "bDeveloperMode"))
-	bool bUseSuccessFailIcons = true;
-
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool|DeveloperMode", meta = (EditCondition = "bDeveloperMode"))
+	FText DiffWindowButtonToolTip = FText::FromString(TEXT("Take screenshot of the shown diff graphs"));
 };
