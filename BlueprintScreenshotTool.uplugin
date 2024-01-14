@@ -7,10 +7,10 @@
 	"Category": "Other",
 	"CreatedBy": "Gradess Games",
 	"CreatedByURL": "https://stepantrofimov.com",
-	"DocsURL": "",
+	"DocsURL": "https://github.com/Gradess2019/BlueprintScreenshotTool",
 	"MarketplaceURL": "",
-	"SupportURL": "",
-	"CanContainContent": true,
+	"SupportURL": "https://discord.gg/zFK38y68tK",
+	"CanContainContent": false,
 	"IsBetaVersion": true,
 	"IsExperimentalVersion": false,
 	"Installed": false,
@@ -18,7 +18,10 @@
 		{
 			"Name": "BlueprintScreenshotTool",
 			"Type": "Editor",
-			"LoadingPhase": "PostEngineInit"
+			"LoadingPhase": "PostEngineInit",
+			"WhitelistPlatforms": [
+				"Win64"
+			]
 		}
 	]
 }
