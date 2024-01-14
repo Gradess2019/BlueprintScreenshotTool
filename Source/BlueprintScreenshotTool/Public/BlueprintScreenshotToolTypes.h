@@ -8,7 +8,7 @@
 #include "BlueprintScreenshotToolTypes.generated.h"
 
 USTRUCT(BlueprintType)
-struct FBSTScreenshotData
+struct BLUEPRINTSCREENSHOTTOOL_API FBSTScreenshotData
 {
 	GENERATED_BODY()
 
@@ -25,7 +25,7 @@ struct FBSTScreenshotData
 };
 
 UENUM()
-enum class EBSTImageFormat : uint8
+enum class BLUEPRINTSCREENSHOTTOOL_API EBSTImageFormat : uint8
 {
 	PNG = EImageFormat::PNG,
 	JPG = EImageFormat::JPEG,
