@@ -30,7 +30,7 @@ public:
 
 	// Padding around selected graph nodes in pixels when taking screenshot
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool")
-	float ScreenshotPadding = 128.f;
+	int32 ScreenshotPadding = 128;
 
 	// Minimum screenshot size in pixels
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool")
