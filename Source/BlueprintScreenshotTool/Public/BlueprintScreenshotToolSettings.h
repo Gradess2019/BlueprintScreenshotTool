@@ -28,17 +28,17 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool", meta = (EditCondition = "Extension == EBSTImageFormat::JPG", ClampMin = "10", ClampMax = "100", UIMin = "10", UIMax = "100"))
 	int32 Quality = 100;
 
-	// Padding around graph nodes in pixels when taking screenshot
+	// Padding around selected graph nodes in pixels when taking screenshot
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool")
 	float ScreenshotPadding = 128.f;
 
 	// Minimum screenshot size in pixels
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool")
-	float MinScreenshotSize = 128.f;
+	int32 MinScreenshotSize = 128;
 
 	// Maximum screenshot size in pixels
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool")
-	float MaxScreenshotSize = 15360.f;
+	int32 MaxScreenshotSize = 15360;
 
 	// Default zoom amount that is used when taking screenshot of selected nodes
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool")
