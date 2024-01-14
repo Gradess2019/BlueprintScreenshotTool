@@ -11,8 +11,10 @@
 #include "ImageWriteQueue.h"
 #include "ImageWriteTask.h"
 #include "SBlueprintDiff.h"
+#include "Framework/Notifications/NotificationManager.h"
 #include "HAL/PlatformApplicationMisc.h"
 #include "Misc/FileHelper.h"
+#include "Widgets/Notifications/SNotificationList.h"
 
 struct FWidgetSnapshotTextureData;
 
@@ -42,12 +44,24 @@ TArray<FString> UBlueprintScreenshotToolHandler::TakeScreenshotWithPaths()
 		}
 	}
 
-	return Paths; 
+	return Paths;
+}
+
+TArray<FString> UBlueprintScreenshotToolHandler::TakeScreenshotWithNotification()
+{
+	const auto Paths = TakeScreenshotWithPaths();
+
+	if (Paths.Num() > 0)
+	{
+		ShowNotification(Paths);
+	}
+
+	return Paths;
 }
 
 void UBlueprintScreenshotToolHandler::TakeScreenshot()
 {
-	TakeScreenshotWithPaths();
+	TakeScreenshotWithNotification();
 }
 
 FString UBlueprintScreenshotToolHandler::SaveScreenshot(const TArray<FColor>& InColorData, const FIntVector& InSize)
@@ -191,4 +205,37 @@ bool UBlueprintScreenshotToolHandler::HasAnySelectedNodes(const TSet<TSharedPtr<
 	}
 
 	return false;
+}
+
+void UBlueprintScreenshotToolHandler::ShowNotification(const TArray<FString>& InPaths)
+{
+	checkf(InPaths.Num() > 0, TEXT("InPaths must not be empty"));
+
+	FFormatOrderedArguments Arguments;
+	Arguments.Add(InPaths.Num());
+
+	const auto* Settings = GetDefault<UBlueprintScreenshotToolSettings>();
+	const auto Message = FText::Format(Settings->NotificationMessageFormat, Arguments);
+
+	FNotificationInfo NotificationInfo(Message);
+	NotificationInfo.ExpireDuration = Settings->ExpireDuration;
+	NotificationInfo.bFireAndForget = !Settings->bPersistentNotification;
+	NotificationInfo.bUseSuccessFailIcons = Settings->bUseSuccessFailIcons;
+
+	FString HyperLinkText;
+	for (auto Id = 0; Id < InPaths.Num(); ++Id)
+	{
+		const auto& Path = InPaths[Id];
+		const auto FullPath = FPaths::ConvertRelativePathToFull(Path);
+		const auto bLast = Id == InPaths.Num() - 1;
+		HyperLinkText += FString::Printf(TEXT("%s%s"), *FullPath, bLast ? TEXT("") : TEXT("\n"));
+	}
+
+	NotificationInfo.HyperlinkText = FText::FromString(HyperLinkText);
+
+	FString HyperLinkPath = FPaths::ConvertRelativePathToFull(InPaths[0]);
+	NotificationInfo.Hyperlink = FSimpleDelegate::CreateLambda([HyperLinkPath] { FPlatformProcess::ExploreFolder(*HyperLinkPath); });
+
+	const auto Notification = FSlateNotificationManager::Get().AddNotification(NotificationInfo);
+	Notification->SetCompletionState(SNotificationItem::CS_Success);
 }
