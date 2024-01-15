@@ -30,8 +30,11 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool")
 	FDirectoryPath SaveDirectory = FDirectoryPath(FPaths::ScreenShotDir());
 
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool", meta = (ConfigRestartRequired = true))
 	FInputChord TakeScreenshotHotkey = FInputChord(EModifierKey::Control, EKeys::F7);
+	
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool", meta = (ConfigRestartRequired = true))
+	FInputChord OpenDirectoryHotkey = FInputChord(EModifierKey::Control, EKeys::F8);
 
 	// Padding around selected graph nodes in pixels when taking screenshot
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool")

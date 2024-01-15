@@ -9,6 +9,7 @@ class BLUEPRINTSCREENSHOTTOOL_API FBlueprintScreenshotToolCommands : public TCom
 {
 public:
 	TSharedPtr<FUICommandInfo> TakeScreenshot;
+	TSharedPtr<FUICommandInfo> OpenDirectory;
 
 public:
 	FBlueprintScreenshotToolCommands();

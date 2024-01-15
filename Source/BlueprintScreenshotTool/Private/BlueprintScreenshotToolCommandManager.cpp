@@ -33,6 +33,11 @@ void FBlueprintScreenshotToolCommandManager::MapCommands()
 		FExecuteAction::CreateStatic(UBlueprintScreenshotToolHandler::TakeScreenshot),
 		FCanExecuteAction());
 
+	CommandList->MapAction(
+		FBlueprintScreenshotToolCommands::Get().OpenDirectory,
+		FExecuteAction::CreateStatic(UBlueprintScreenshotToolHandler::OpenDirectory),
+		FCanExecuteAction());
+
 	const auto& EditorCommandList = IMainFrameModule::Get().GetMainFrameCommandBindings();
 	EditorCommandList->Append(CommandList.ToSharedRef());
 }

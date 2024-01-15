@@ -19,7 +19,8 @@ FBlueprintScreenshotToolCommands::FBlueprintScreenshotToolCommands()
 
 void FBlueprintScreenshotToolCommands::RegisterCommands()
 {
-	UI_COMMAND(TakeScreenshot, "Take Screenshot", "Take active blueprint screenshot", EUserInterfaceActionType::Button, FInputChord(EKeys::F7, EModifierKey::Control));
+	UI_COMMAND(TakeScreenshot, "Take Screenshot", "Take active blueprint screenshot", EUserInterfaceActionType::Button, GetDefault<UBlueprintScreenshotToolSettings>()->TakeScreenshotHotkey);
+	UI_COMMAND(OpenDirectory, "Open Directory", "Open directory with screenshots", EUserInterfaceActionType::None, GetDefault<UBlueprintScreenshotToolSettings>()->OpenDirectoryHotkey);
 }
 
 #undef LOCTEXT_NAMESPACE

@@ -24,6 +24,8 @@ public:
 	static FString SaveScreenshot(const TArray<FColor>& InColorData, const FIntVector& InSize);
 	static FBSTScreenshotData CaptureGraphEditor(TSharedPtr<SGraphEditor> InGraphEditor);
 
+	static void OpenDirectory();
+
 protected:
 	static TSharedRef<SWindow> CreateTransparentWindow(const FVector2D& InWindowSize);
 	static TSharedRef<SWindow> CreateTransparentWindowWithContent(const FVector2D& InWindowSize, TSharedRef<SWidget> InContent);
@@ -31,5 +33,6 @@ protected:
 	static void FixGraphNodesAppearance(TSharedPtr<SGraphEditor> InGraphEditor);
 	static bool HasAnySelectedNodes(const TSet<TSharedPtr<SGraphEditor>>& InGraphEditors);
 	static void ShowNotification(const TArray<FString>& InPaths);
+	static void ShowDirectoryErrorNotification(const FString& InPath);
 	static FString GetExtension(EBSTImageFormat InFormat);
 };

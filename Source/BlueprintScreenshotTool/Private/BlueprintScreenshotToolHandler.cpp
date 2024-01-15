@@ -168,6 +168,19 @@ FBSTScreenshotData UBlueprintScreenshotToolHandler::CaptureGraphEditor(TSharedPt
 	return ScreenshotData;
 }
 
+void UBlueprintScreenshotToolHandler::OpenDirectory()
+{
+	const auto Path = FPaths::ConvertRelativePathToFull(GetDefault<UBlueprintScreenshotToolSettings>()->SaveDirectory.Path);
+	if (FPaths::DirectoryExists(Path))
+	{
+		FPlatformProcess::ExploreFolder(*Path);
+		
+	}
+	else
+	{
+		ShowDirectoryErrorNotification(Path);
+	}
+}
 
 TSharedRef<SWindow> UBlueprintScreenshotToolHandler::CreateTransparentWindow(const FVector2D& InWindowSize)
 {
@@ -248,6 +261,18 @@ void UBlueprintScreenshotToolHandler::ShowNotification(const TArray<FString>& In
 
 	const auto Notification = FSlateNotificationManager::Get().AddNotification(NotificationInfo);
 	Notification->SetCompletionState(SNotificationItem::CS_Success);
+}
+
+void UBlueprintScreenshotToolHandler::ShowDirectoryErrorNotification(const FString& InPath)
+{
+	const auto* Settings = GetDefault<UBlueprintScreenshotToolSettings>();
+	FNotificationInfo NotificationInfo(FText::FromString(TEXT("Directory does not exist: \n") + InPath));
+	NotificationInfo.ExpireDuration = Settings->ExpireDuration;
+	NotificationInfo.bFireAndForget = true;
+	NotificationInfo.bUseSuccessFailIcons = Settings->bUseSuccessFailIcons;
+
+	const auto Notification = FSlateNotificationManager::Get().AddNotification(NotificationInfo);
+	Notification->SetCompletionState(SNotificationItem::CS_Fail);
 }
 
 FString UBlueprintScreenshotToolHandler::GetExtension(EBSTImageFormat InFormat)
