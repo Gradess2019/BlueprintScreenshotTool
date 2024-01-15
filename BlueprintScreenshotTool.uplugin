@@ -3,7 +3,7 @@
 	"Version": 1,
 	"VersionName": "1.0",
 	"FriendlyName": "BlueprintScreenshotTool",
-	"Description": "",
+	"Description": "The tool to take screenshots of graphs inside blueprint editor and Blueprint Diff window",
 	"Category": "Other",
 	"CreatedBy": "Gradess Games",
 	"CreatedByURL": "https://stepantrofimov.com",
