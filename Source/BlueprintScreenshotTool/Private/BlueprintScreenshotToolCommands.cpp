@@ -2,6 +2,7 @@
 
 
 #include "BlueprintScreenshotToolCommands.h"
+#include "BlueprintScreenshotToolSettings.h"
 #include "BlueprintScreenshotToolStyle.h"
 
 #define LOCTEXT_NAMESPACE "BlueprintScreenshotTool"
@@ -18,7 +19,7 @@ FBlueprintScreenshotToolCommands::FBlueprintScreenshotToolCommands()
 
 void FBlueprintScreenshotToolCommands::RegisterCommands()
 {
-	UI_COMMAND(TakeScreenshot, "Take Screenshot", "Take active blueprint screenshot", EUserInterfaceActionType::Button, FInputChord());
+	UI_COMMAND(TakeScreenshot, "Take Screenshot", "Take active blueprint screenshot", EUserInterfaceActionType::Button, FInputChord(EKeys::F7, EModifierKey::Control));
 }
 
 #undef LOCTEXT_NAMESPACE

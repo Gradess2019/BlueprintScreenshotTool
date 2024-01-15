@@ -4,6 +4,7 @@
 #include "BlueprintScreenshotToolCommandManager.h"
 #include "BlueprintScreenshotToolCommands.h"
 #include "BlueprintScreenshotToolHandler.h"
+#include "Interfaces/IMainFrameModule.h"
 #include "Toolkits/AssetEditorToolkit.h"
 
 void FBlueprintScreenshotToolCommandManager::RegisterCommands()
@@ -27,11 +28,13 @@ void FBlueprintScreenshotToolCommandManager::OnTakeScreenshot()
 void FBlueprintScreenshotToolCommandManager::MapCommands()
 {
 	CommandList = MakeShareable(new FUICommandList());
-
 	CommandList->MapAction(
 		FBlueprintScreenshotToolCommands::Get().TakeScreenshot,
 		FExecuteAction::CreateStatic(UBlueprintScreenshotToolHandler::TakeScreenshot),
 		FCanExecuteAction());
+
+	const auto& EditorCommandList = IMainFrameModule::Get().GetMainFrameCommandBindings();
+	EditorCommandList->Append(CommandList.ToSharedRef());
 }
 
 void FBlueprintScreenshotToolCommandManager::RegisterToolbarExtension()

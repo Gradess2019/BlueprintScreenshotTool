@@ -30,6 +30,9 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool")
 	FDirectoryPath SaveDirectory = FDirectoryPath(FPaths::ScreenShotDir());
 
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool")
+	FInputChord TakeScreenshotHotkey = FInputChord(EModifierKey::Control, EKeys::F7);
+
 	// Padding around selected graph nodes in pixels when taking screenshot
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool")
 	int32 ScreenshotPadding = 128;

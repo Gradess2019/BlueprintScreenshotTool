@@ -44,6 +44,7 @@ public class BlueprintScreenshotTool : ModuleRules
 				"UnrealEd",
 				"ImageWriteQueue",
 				"ApplicationCore",
+				"InputCore"
 				// ... add private dependencies that you statically link with here ...	
 			}
 		);
