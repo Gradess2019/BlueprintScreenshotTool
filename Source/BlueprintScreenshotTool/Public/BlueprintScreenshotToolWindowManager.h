@@ -1,4 +1,5 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Copyright 2024 Gradess Games. All Rights Reserved.
+
 
 #pragma once
 
@@ -8,9 +9,6 @@
 
 class SBlueprintDiff;
 
-/**
- * 
- */
 UCLASS()
 class BLUEPRINTSCREENSHOTTOOL_API UBlueprintScreenshotToolWindowManager : public UObject, public FTickableEditorObject
 {
@@ -28,27 +26,27 @@ public:
 	static TSet<TSharedPtr<SGraphEditor>> FindGraphEditors(TSharedRef<SWindow> InWindow);
 	static TSet<TSharedPtr<SGraphEditor>> FindActiveGraphEditors();
 	static TSet<TSharedPtr<SGraphEditor>> FindAllGraphEditors();
-	
-	template<typename T>
+
+	template <typename T>
 	static FName GetTemplateName()
 	{
 		const auto ClassDefinition = FString(typeid(T).name());
 		return *ClassDefinition.Replace(TEXT("class"), TEXT("")).TrimStartAndEnd();
 	}
-	
-	template<typename T>
+
+	template <typename T>
 	static TSharedPtr<T> FindParent(TSharedPtr<SWidget> InWidget)
 	{
 		return StaticCastSharedPtr<T>(FindParent(InWidget, GetTemplateName<T>()));
 	}
 
-	template<typename T>
+	template <typename T>
 	static TSharedPtr<T> FindChild(TSharedPtr<SWidget> InWidget)
 	{
 		return StaticCastSharedPtr<T>(FindChild(InWidget, GetTemplateName<T>()));
 	}
 
-	template<typename T>
+	template <typename T>
 	static TSet<TSharedPtr<T>> FindChildren(TSharedPtr<SWidget> InWidget)
 	{
 		auto Widgets = FindChildren(InWidget, GetTemplateName<T>());

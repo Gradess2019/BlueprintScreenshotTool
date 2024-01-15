@@ -1,4 +1,5 @@
-// Copyright 2023 Gradess Games. All Rights Reserved.
+// Copyright 2024 Gradess Games. All Rights Reserved.
+
 
 #pragma once
 
@@ -8,9 +9,9 @@ class BLUEPRINTSCREENSHOTTOOL_API FBlueprintScreenshotToolCommands : public TCom
 {
 public:
 	TSharedPtr<FUICommandInfo> TakeScreenshot;
-	
+
 public:
 	FBlueprintScreenshotToolCommands();
-	
+
 	virtual void RegisterCommands() override;
 };

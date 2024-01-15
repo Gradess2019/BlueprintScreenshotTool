@@ -1,4 +1,5 @@
-// Copyright 2023 Gradess Games. All Rights Reserved.
+// Copyright 2024 Gradess Games. All Rights Reserved.
+
 
 #pragma once
 
@@ -20,11 +21,11 @@ public:
 
 		void Initialize();
 	};
-	
+
 	static void Initialize();
 	static void Shutdown();
 	static void ReloadTextures();
-	
+
 	static const ISlateStyle& Get();
 
 	static FName GetStyleSetName();

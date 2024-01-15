@@ -1,4 +1,5 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Copyright 2024 Gradess Games. All Rights Reserved.
+
 
 #pragma once
 
@@ -7,9 +8,6 @@
 #include "UObject/Object.h"
 #include "BlueprintScreenshotToolSettings.generated.h"
 
-/**
- * 
- */
 UCLASS(BlueprintType, Config = BluerpintScreenshotTool)
 class BLUEPRINTSCREENSHOTTOOL_API UBlueprintScreenshotToolSettings : public UObject
 {
@@ -51,7 +49,7 @@ public:
 	// If true, the notification with hyperlink to the screenshot will be shown after taking the screenshot
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool|Notification")
 	bool bShowNotification = true;
-	
+
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool|Notification")
 	FText NotificationMessageFormat = FText::FromString("{Count}|plural(one=Screenshot,other=Screenshots) taken: ");
 
@@ -62,13 +60,13 @@ public:
 	// If true, the notification will use success/fail icons instead of the default info icon
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool|Notification")
 	bool bUseSuccessFailIcons = true;
-	
+
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool|DeveloperMode")
 	bool bDeveloperMode = false;
 
 	// The text is used for searching Blueprint Diff toolbar buttons to inject "Take Screenshot" button
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool|DeveloperMode", meta = (EditCondition = "bDeveloperMode"))
-	TArray<FText> DiffToolbarTexts = { FText::FromString(TEXT("Lock/Unlock")), FText::FromString(TEXT("Vertical/Horizontal")) };
+	TArray<FText> DiffToolbarTexts = {FText::FromString(TEXT("Lock/Unlock")), FText::FromString(TEXT("Vertical/Horizontal"))};
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool|DeveloperMode", meta = (EditCondition = "bDeveloperMode"))
 	FText DiffWindowButtonLabel = FText::FromString(TEXT("Take Screenshot"));

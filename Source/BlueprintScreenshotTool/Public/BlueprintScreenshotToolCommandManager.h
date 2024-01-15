@@ -1,4 +1,5 @@
-// Copyright 2023 Gradess Games. All Rights Reserved.
+// Copyright 2024 Gradess Games. All Rights Reserved.
+
 
 #pragma once
 
@@ -9,7 +10,7 @@ class BLUEPRINTSCREENSHOTTOOL_API FBlueprintScreenshotToolCommandManager
 private:
 	TSharedPtr<FUICommandList> CommandList;
 	TSharedPtr<FExtender> ToolbarExtension;
-	
+
 public:
 	void RegisterCommands();
 	void UnregisterCommands();

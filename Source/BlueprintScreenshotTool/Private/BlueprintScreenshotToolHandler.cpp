@@ -1,4 +1,4 @@
-// Copyright 2023 Gradess Games. All Rights Reserved.
+// Copyright 2024 Gradess Games. All Rights Reserved.
 
 
 #include "BlueprintScreenshotToolHandler.h"
@@ -78,7 +78,7 @@ FString UBlueprintScreenshotToolHandler::SaveScreenshot(const TArray<FColor>& In
 	const auto& BaseName = Settings->ScreenshotBaseName;
 	const auto FileExtension = GetExtension(Settings->Extension);
 	const auto Path = FPaths::Combine(ScreenshotDir, BaseName);
-	
+
 	FString Filename;
 	FFileHelper::GenerateNextBitmapFilename(Path, FileExtension, Filename);
 

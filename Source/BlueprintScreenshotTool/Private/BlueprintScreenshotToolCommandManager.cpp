@@ -1,10 +1,9 @@
-// Copyright 2023 Gradess Games. All Rights Reserved.
+// Copyright 2024 Gradess Games. All Rights Reserved.
 
 
 #include "BlueprintScreenshotToolCommandManager.h"
 #include "BlueprintScreenshotToolCommands.h"
 #include "BlueprintScreenshotToolHandler.h"
-
 #include "Toolkits/AssetEditorToolkit.h"
 
 void FBlueprintScreenshotToolCommandManager::RegisterCommands()
