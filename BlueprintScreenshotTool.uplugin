@@ -4,7 +4,7 @@
 	"VersionName": "1.0",
 	"FriendlyName": "BlueprintScreenshotTool",
 	"Description": "The tool to take screenshots of graphs inside blueprint editor and Blueprint Diff window",
-	"Category": "Other",
+	"Category": "Editor",
 	"CreatedBy": "Gradess Games",
 	"CreatedByURL": "https://stepantrofimov.com",
 	"DocsURL": "https://github.com/Gradess2019/BlueprintScreenshotTool",
