@@ -74,7 +74,7 @@ void UBlueprintScreenshotToolHandler::TakeScreenshot()
 FString UBlueprintScreenshotToolHandler::SaveScreenshot(const TArray<FColor>& InColorData, const FIntVector& InSize)
 {
 	const auto* Settings = GetDefault<UBlueprintScreenshotToolSettings>();
-	const auto ScreenshotDir = FPaths::ScreenShotDir();
+	const auto ScreenshotDir = Settings->SaveDirectory.Path;
 	const auto& BaseName = Settings->ScreenshotBaseName;
 	const auto FileExtension = GetExtension(Settings->Extension);
 	const auto Path = FPaths::Combine(ScreenshotDir, BaseName);

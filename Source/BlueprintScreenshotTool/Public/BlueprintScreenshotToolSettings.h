@@ -25,6 +25,10 @@ public:
 	// Quality of jpg image. 10-100
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool", meta = (EditCondition = "Extension == EBSTImageFormat::JPG", ClampMin = "10", ClampMax = "100", UIMin = "10", UIMax = "100"))
 	int32 Quality = 100;
+	
+	// Directory where the screenshots will be saved
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool")
+	FDirectoryPath SaveDirectory = FDirectoryPath(FPaths::ScreenShotDir());
 
 	// Padding around selected graph nodes in pixels when taking screenshot
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool")
