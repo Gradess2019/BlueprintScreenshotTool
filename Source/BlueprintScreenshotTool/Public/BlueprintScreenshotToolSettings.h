@@ -28,7 +28,7 @@ public:
 	
 	// Directory where the screenshots will be saved
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool")
-	FDirectoryPath SaveDirectory = FDirectoryPath(FPaths::ScreenShotDir());
+	FDirectoryPath SaveDirectory = { FPaths::ScreenShotDir() };
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool", meta = (ConfigRestartRequired = true))
 	FInputChord TakeScreenshotHotkey = FInputChord(EModifierKey::Control, EKeys::F7);
