@@ -18,6 +18,7 @@ public:
 	//~ Begin FTickableEditorObject Interface
 	virtual void Tick(float DeltaTime) override;
 	virtual TStatId GetStatId() const override;
+	virtual bool IsAllowedToTick() const override;
 	//~ End FTickableEditorObject Interface
 
 	static TSharedPtr<SWidget> FindParent(TSharedPtr<SWidget> InWidget, const FName& InParentWidgetType);
