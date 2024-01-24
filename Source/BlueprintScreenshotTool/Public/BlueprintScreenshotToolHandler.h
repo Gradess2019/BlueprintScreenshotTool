@@ -27,12 +27,12 @@ public:
 	static void OpenDirectory();
 
 protected:
-	static TSharedRef<SWindow> CreateTransparentWindow(const FVector2D& InWindowSize);
-	static TSharedRef<SWindow> CreateTransparentWindowWithContent(const FVector2D& InWindowSize, TSharedRef<SWidget> InContent);
-	static void ShowWindow(TSharedRef<SWindow> InWindow);
-	static void FixGraphNodesAppearance(TSharedPtr<SGraphEditor> InGraphEditor);
+	static void RestoreNodeSelection(TSharedPtr<SGraphEditor> InGraphEditor, const TSet<UObject*>& InSelectedNodes);
 	static bool HasAnySelectedNodes(const TSet<TSharedPtr<SGraphEditor>>& InGraphEditors);
 	static void ShowNotification(const TArray<FString>& InPaths);
 	static void ShowDirectoryErrorNotification(const FString& InPath);
+	static UTextureRenderTarget2D* DrawGraphEditor(TSharedPtr<SGraphEditor> InGraphEditor, const FVector2D& InWindowSize);
 	static FString GetExtension(EBSTImageFormat InFormat);
 };
+
+
