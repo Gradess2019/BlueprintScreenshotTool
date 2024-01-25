@@ -100,38 +100,43 @@ FBSTScreenshotData UBlueprintScreenshotToolHandler::CaptureGraphEditor(TSharedPt
 		return FBSTScreenshotData();
 	}
 
-	FVector2D CurrentViewLocation;
+	FVector2D CachedViewLocation;
 	FVector2D NewViewLocation;
 	FVector2D WindowSize;
+	
 	float CachedZoomAmount;
+	float NewZoomAmount;
 	
 	const auto* Settings = GetDefault<UBlueprintScreenshotToolSettings>();
-	
-	InGraphEditor->GetViewLocation(CurrentViewLocation, CachedZoomAmount);
-	const auto& CachedGeometry = InGraphEditor->GetCachedGeometry();
-	const auto SizeOfWidget = CachedGeometry.GetLocalSize();
-	
 	const auto SelectedNodes = InGraphEditor->GetSelectedNodes();
+
+	InGraphEditor->GetViewLocation(CachedViewLocation, CachedZoomAmount);
+	
 	
 	if (SelectedNodes.Num() > 0)
 	{
 		FSlateRect BoundsForSelectedNodes;
-	
 		InGraphEditor->GetBoundsForSelectedNodes(BoundsForSelectedNodes, Settings->ScreenshotPadding);
+		
 		NewViewLocation = BoundsForSelectedNodes.GetTopLeft();
+		NewZoomAmount = Settings->ZoomAmount;
+
 		WindowSize = BoundsForSelectedNodes.GetSize();
-	
-		InGraphEditor->SetViewLocation(NewViewLocation, Settings->ZoomAmount);
 	}
 	else
 	{
-		NewViewLocation = CurrentViewLocation;
+		NewViewLocation = CachedViewLocation;
+		NewZoomAmount = CachedZoomAmount;
 
-		const float DPIScale = FPlatformApplicationMisc::GetDPIScaleFactorAtPoint(0.0f, 0.0f);
+		const auto DPIScale = FPlatformApplicationMisc::GetDPIScaleFactorAtPoint(0.0f, 0.0f);
+		const auto& CachedGeometry = InGraphEditor->GetCachedGeometry();
+		const auto SizeOfWidget = CachedGeometry.GetLocalSize();
 		WindowSize = SizeOfWidget * DPIScale;
 	
 		InGraphEditor->SetViewLocation(NewViewLocation, CachedZoomAmount);
 	}
+
+	InGraphEditor->SetViewLocation(NewViewLocation, NewZoomAmount);
 	
 	WindowSize = WindowSize.ClampAxes(Settings->MinScreenshotSize, Settings->MaxScreenshotSize);
 
@@ -144,7 +149,7 @@ FBSTScreenshotData UBlueprintScreenshotToolHandler::CaptureGraphEditor(TSharedPt
 	RenderTarget->GameThread_GetRenderTargetResource()->ReadPixels(ScreenshotData.ColorData);
 
 	RestoreNodeSelection(InGraphEditor, SelectedNodes);
-	InGraphEditor->SetViewLocation(CurrentViewLocation, CachedZoomAmount);
+	InGraphEditor->SetViewLocation(CachedViewLocation, CachedZoomAmount);
 
 	return ScreenshotData;
 }
