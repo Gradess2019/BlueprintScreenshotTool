@@ -40,8 +40,8 @@ TArray<FString> UBlueprintScreenshotToolHandler::TakeScreenshotWithPaths()
 			continue;
 		}
 
-		auto [ColorData, Size] = CaptureGraphEditor(GraphEditor);
-		const auto Path = SaveScreenshot(ColorData, Size);
+		const auto ScreenshotData = CaptureGraphEditor(GraphEditor);
+		const auto Path = SaveScreenshot(ScreenshotData);
 		if (!Path.IsEmpty())
 		{
 			Paths.Add(Path);
@@ -77,20 +77,31 @@ void UBlueprintScreenshotToolHandler::TakeScreenshot()
 
 FString UBlueprintScreenshotToolHandler::SaveScreenshot(const TArray<FColor>& InColorData, const FIntVector& InSize)
 {
+	return SaveScreenshot({ InColorData, InSize });
+}
+
+FString UBlueprintScreenshotToolHandler::SaveScreenshot(const FBSTScreenshotData& InData)
+{
+	if (!InData.IsValid())
+	{
+		return FString();
+	}
+	
 	const auto* Settings = GetDefault<UBlueprintScreenshotToolSettings>();
 	const auto ScreenshotDir = Settings->SaveDirectory.Path;
-	const auto& BaseName = Settings->ScreenshotBaseName;
+	const auto& BaseName = Settings->bOverrideScreenshotNaming || InData.CustomName.IsEmpty() ? Settings->ScreenshotBaseName : InData.CustomName;
 	const auto FileExtension = GetExtension(Settings->Extension);
 	const auto Path = FPaths::Combine(ScreenshotDir, BaseName);
 
 	FString Filename;
 	FFileHelper::GenerateNextBitmapFilename(Path, FileExtension, Filename);
 
-	const auto ImageView = FImageView(InColorData.GetData(), InSize.X, InSize.Y);
+	const auto ImageView = FImageView(InData.ColorData.GetData(), InData.Size.X, InData.Size.Y);
 	const auto Quality = Settings->Extension == EBSTImageFormat::JPG ? Settings->Quality : 0;
 	const auto bSuccess = FImageUtils::SaveImageByExtension(*Filename, ImageView, Quality);
 
 	return bSuccess ? Filename : FString();
+	
 }
 
 FBSTScreenshotData UBlueprintScreenshotToolHandler::CaptureGraphEditor(TSharedPtr<SGraphEditor> InGraphEditor)
@@ -151,6 +162,13 @@ FBSTScreenshotData UBlueprintScreenshotToolHandler::CaptureGraphEditor(TSharedPt
 	RestoreNodeSelection(InGraphEditor, SelectedNodes);
 	InGraphEditor->SetViewLocation(CachedViewLocation, CachedZoomAmount);
 
+	if (Settings->bOverrideScreenshotNaming)
+	{
+		return ScreenshotData;
+	}
+	
+	ScreenshotData.CustomName = GenerateScreenshotName(InGraphEditor);
+	
 	return ScreenshotData;
 }
 
@@ -294,4 +312,31 @@ FString UBlueprintScreenshotToolHandler::GetExtension(EBSTImageFormat InFormat)
 		checkf(false, TEXT("Unknown image format"));
 		return TEXT("png");
 	}
+}
+
+FString UBlueprintScreenshotToolHandler::GenerateScreenshotName(TSharedPtr<SGraphEditor> InGraphEditor)
+{
+	if (!ensure(InGraphEditor.IsValid()))
+	{
+		return {};
+	}
+	
+	const auto* GraphObject = InGraphEditor->GetCurrentGraph();
+
+	if (!IsValid(GraphObject))
+	{
+		return {};
+	}
+	
+	const auto* GraphOwner = GraphObject->GetOuter();
+	if (!IsValid(GraphOwner))
+	{
+		return {};
+	}
+
+	const auto OwnerName = GraphOwner->GetName();
+	const auto GraphName = GraphObject->GetName();
+	const auto ScreenshotName = FString::Printf(TEXT("%s_%s_"), *OwnerName, *GraphName);
+
+	return ScreenshotName;
 }

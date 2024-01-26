@@ -14,8 +14,12 @@ class BLUEPRINTSCREENSHOTTOOL_API UBlueprintScreenshotToolSettings : public UObj
 	GENERATED_BODY()
 
 public:
-	// Base name of the screenshot. The number will be appended to the end of the name.
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool")
+	// If enabled the screenshot will be saved with the custom name
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool", meta = (InlineEditConditionToggle))
+	bool bOverrideScreenshotNaming = false;
+
+	// Will be used as a base name for the screenshot, instead of format <AssetName>_<GraphName>
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool", meta = (EditCondition = "bOverrideScreenshotNaming"))
 	FString ScreenshotBaseName = FString(TEXT("GraphScreenshot"));
 
 	// Screenshot file format
