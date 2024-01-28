@@ -17,6 +17,11 @@ TStatId UBlueprintScreenshotToolWindowManager::GetStatId() const
 	RETURN_QUICK_DECLARE_CYCLE_STAT(UBlueprintScreenshotToolWindowManager, STATGROUP_Tickables);
 }
 
+bool UBlueprintScreenshotToolWindowManager::IsAllowedToTick() const
+{
+	return IsValid(this);
+}
+
 TSharedPtr<SWidget> UBlueprintScreenshotToolWindowManager::FindParent(TSharedPtr<SWidget> InWidget, const FName& InParentWidgetType)
 {
 	if (!InWidget.IsValid())

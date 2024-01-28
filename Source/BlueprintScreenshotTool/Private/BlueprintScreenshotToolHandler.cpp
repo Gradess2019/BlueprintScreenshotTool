@@ -11,9 +11,13 @@
 #include "ImageWriteQueue.h"
 #include "ImageWriteTask.h"
 #include "SBlueprintDiff.h"
+#include "RenderingThread.h"
+#include "Engine/TextureRenderTarget2D.h"
+
 #include "Framework/Notifications/NotificationManager.h"
 #include "HAL/PlatformApplicationMisc.h"
 #include "Misc/FileHelper.h"
+#include "Slate/WidgetRenderer.h"
 #include "Widgets/Notifications/SNotificationList.h"
 
 struct FWidgetSnapshotTextureData;
@@ -36,8 +40,8 @@ TArray<FString> UBlueprintScreenshotToolHandler::TakeScreenshotWithPaths()
 			continue;
 		}
 
-		auto [ColorData, Size] = CaptureGraphEditor(GraphEditor);
-		const auto Path = SaveScreenshot(ColorData, Size);
+		const auto ScreenshotData = CaptureGraphEditor(GraphEditor);
+		const auto Path = SaveScreenshot(ScreenshotData);
 		if (!Path.IsEmpty())
 		{
 			Paths.Add(Path);
@@ -73,20 +77,31 @@ void UBlueprintScreenshotToolHandler::TakeScreenshot()
 
 FString UBlueprintScreenshotToolHandler::SaveScreenshot(const TArray<FColor>& InColorData, const FIntVector& InSize)
 {
+	return SaveScreenshot({ InColorData, InSize });
+}
+
+FString UBlueprintScreenshotToolHandler::SaveScreenshot(const FBSTScreenshotData& InData)
+{
+	if (!InData.IsValid())
+	{
+		return FString();
+	}
+	
 	const auto* Settings = GetDefault<UBlueprintScreenshotToolSettings>();
-	const auto ScreenshotDir = FPaths::ScreenShotDir();
-	const auto& BaseName = Settings->ScreenshotBaseName;
+	const auto ScreenshotDir = Settings->SaveDirectory.Path;
+	const auto& BaseName = Settings->bOverrideScreenshotNaming || InData.CustomName.IsEmpty() ? Settings->ScreenshotBaseName : InData.CustomName;
 	const auto FileExtension = GetExtension(Settings->Extension);
 	const auto Path = FPaths::Combine(ScreenshotDir, BaseName);
 
 	FString Filename;
 	FFileHelper::GenerateNextBitmapFilename(Path, FileExtension, Filename);
 
-	const auto ImageView = FImageView(InColorData.GetData(), InSize.X, InSize.Y);
+	const auto ImageView = FImageView(InData.ColorData.GetData(), InData.Size.X, InData.Size.Y);
 	const auto Quality = Settings->Extension == EBSTImageFormat::JPG ? Settings->Quality : 0;
 	const auto bSuccess = FImageUtils::SaveImageByExtension(*Filename, ImageView, Quality);
 
 	return bSuccess ? Filename : FString();
+	
 }
 
 FBSTScreenshotData UBlueprintScreenshotToolHandler::CaptureGraphEditor(TSharedPtr<SGraphEditor> InGraphEditor)
@@ -96,112 +111,89 @@ FBSTScreenshotData UBlueprintScreenshotToolHandler::CaptureGraphEditor(TSharedPt
 		return FBSTScreenshotData();
 	}
 
-	FVector2D CurrentViewLocation;
+	FVector2D CachedViewLocation;
 	FVector2D NewViewLocation;
 	FVector2D WindowSize;
+	
 	float CachedZoomAmount;
-
+	float NewZoomAmount;
+	
 	const auto* Settings = GetDefault<UBlueprintScreenshotToolSettings>();
+	const auto SelectedNodes = InGraphEditor->GetSelectedNodes();
 
-	InGraphEditor->GetViewLocation(CurrentViewLocation, CachedZoomAmount);
-
-	const auto& CachedGeometry = InGraphEditor->GetCachedGeometry();
-	const auto SizeOfWidget = CachedGeometry.GetLocalSize();
-
-	const auto& SelectedNodes = InGraphEditor->GetSelectedNodes();
-	float DPIScale = FPlatformApplicationMisc::GetDPIScaleFactorAtPoint(0.0f, 0.0f);
-
+	InGraphEditor->GetViewLocation(CachedViewLocation, CachedZoomAmount);
+	
+	
 	if (SelectedNodes.Num() > 0)
 	{
 		FSlateRect BoundsForSelectedNodes;
-
 		InGraphEditor->GetBoundsForSelectedNodes(BoundsForSelectedNodes, Settings->ScreenshotPadding);
+		
 		NewViewLocation = BoundsForSelectedNodes.GetTopLeft();
-		WindowSize = BoundsForSelectedNodes.GetSize();
+		NewZoomAmount = Settings->ZoomAmount;
 
-		InGraphEditor->SetViewLocation(NewViewLocation, Settings->ZoomAmount);
+		WindowSize = BoundsForSelectedNodes.GetSize();
 	}
 	else
 	{
-		NewViewLocation = CurrentViewLocation;
-		WindowSize = SizeOfWidget * DPIScale;
+		NewViewLocation = CachedViewLocation;
+		NewZoomAmount = CachedZoomAmount;
 
+		const auto DPIScale = FPlatformApplicationMisc::GetDPIScaleFactorAtPoint(0.0f, 0.0f);
+		const auto& CachedGeometry = InGraphEditor->GetCachedGeometry();
+		const auto SizeOfWidget = CachedGeometry.GetLocalSize();
+		WindowSize = SizeOfWidget * DPIScale;
+	
 		InGraphEditor->SetViewLocation(NewViewLocation, CachedZoomAmount);
 	}
 
+	InGraphEditor->SetViewLocation(NewViewLocation, NewZoomAmount);
+	
 	WindowSize = WindowSize.ClampAxes(Settings->MinScreenshotSize, Settings->MaxScreenshotSize);
 
 	InGraphEditor->ClearSelectionSet();
 
-	const auto NewWindow = CreateTransparentWindowWithContent(WindowSize, InGraphEditor.ToSharedRef());
-	const bool bShowImmediately = false;
-	FSlateApplication::Get().AddWindow(NewWindow, bShowImmediately);
-	NewWindow->ShowWindow();
-
-	if (Settings->bNodeAppearanceFixup)
-	{
-		FixGraphNodesAppearance(InGraphEditor);
-	}
-
+	const auto RenderTarget = TStrongObjectPtr<UTextureRenderTarget2D>(DrawGraphEditor(InGraphEditor, WindowSize));
 
 	FBSTScreenshotData ScreenshotData;
-	FSlateApplication::Get().TakeScreenshot(NewWindow, ScreenshotData.ColorData, ScreenshotData.Size);
+	ScreenshotData.Size = FIntVector(WindowSize.X, WindowSize.Y, 0);
+	RenderTarget->GameThread_GetRenderTargetResource()->ReadPixels(ScreenshotData.ColorData);
 
-	InGraphEditor->SetViewLocation(CurrentViewLocation, CachedZoomAmount);
+	RestoreNodeSelection(InGraphEditor, SelectedNodes);
+	InGraphEditor->SetViewLocation(CachedViewLocation, CachedZoomAmount);
 
-	for (auto* SelectedNode : SelectedNodes)
+	if (Settings->bOverrideScreenshotNaming)
 	{
-		if (UEdGraphNode* SelectedEdGraphNode = Cast<UEdGraphNode>(SelectedNode))
-		{
-			InGraphEditor->SetNodeSelection(SelectedEdGraphNode, true);
-		}
+		return ScreenshotData;
 	}
-
-	NewWindow->HideWindow();
-	NewWindow->RequestDestroyWindow();
-
-	if (Settings->bNodeAppearanceFixup)
-	{
-		FixGraphNodesAppearance(InGraphEditor);
-	}
-
+	
+	ScreenshotData.CustomName = GenerateScreenshotName(InGraphEditor);
+	
 	return ScreenshotData;
 }
 
-
-TSharedRef<SWindow> UBlueprintScreenshotToolHandler::CreateTransparentWindow(const FVector2D& InWindowSize)
+void UBlueprintScreenshotToolHandler::OpenDirectory()
 {
-	return SNew(SWindow)
-		.CreateTitleBar(false)
-		.ClientSize(InWindowSize)
-		.ScreenPosition(FVector2D(0.0f, 0.0f))
-		.AdjustInitialSizeAndPositionForDPIScale(false)
-		.SaneWindowPlacement(false)
-		.SupportsTransparency(EWindowTransparency::PerWindow)
-		.InitialOpacity(0.0f);
+	const auto Path = FPaths::ConvertRelativePathToFull(GetDefault<UBlueprintScreenshotToolSettings>()->SaveDirectory.Path);
+	if (FPaths::DirectoryExists(Path))
+	{
+		FPlatformProcess::ExploreFolder(*Path);
+	}
+	else
+	{
+		ShowDirectoryErrorNotification(Path);
+	}
 }
 
-TSharedRef<SWindow> UBlueprintScreenshotToolHandler::CreateTransparentWindowWithContent(const FVector2D& InWindowSize, TSharedRef<SWidget> InContent)
+void UBlueprintScreenshotToolHandler::RestoreNodeSelection(TSharedPtr<SGraphEditor> InGraphEditor, const TSet<UObject*>& InSelectedNodes)
 {
-	auto Window = CreateTransparentWindow(InWindowSize);
-	Window->SetContent(InContent);
-
-	return Window;
-}
-
-void UBlueprintScreenshotToolHandler::ShowWindow(TSharedRef<SWindow> InWindow)
-{
-	const bool bShowImmediately = false;
-	FSlateApplication::Get().AddWindow(InWindow, bShowImmediately);
-
-	InWindow->ShowWindow();
-	InWindow->Invalidate(EInvalidateWidgetReason::LayoutAndVolatility);
-}
-
-void UBlueprintScreenshotToolHandler::FixGraphNodesAppearance(TSharedPtr<SGraphEditor> InGraphEditor)
-{
-	InGraphEditor->Invalidate(EInvalidateWidgetReason::Paint);
-	FSlateApplication::Get().Tick();
+	for (const auto NodeObject : InSelectedNodes)
+	{
+		if (auto* SelectedNode = Cast<UEdGraphNode>(NodeObject))
+		{
+			InGraphEditor->SetNodeSelection(SelectedNode, true);
+		}
+	}
 }
 
 bool UBlueprintScreenshotToolHandler::HasAnySelectedNodes(const TSet<TSharedPtr<SGraphEditor>>& InGraphEditors)
@@ -250,6 +242,62 @@ void UBlueprintScreenshotToolHandler::ShowNotification(const TArray<FString>& In
 	Notification->SetCompletionState(SNotificationItem::CS_Success);
 }
 
+void UBlueprintScreenshotToolHandler::ShowDirectoryErrorNotification(const FString& InPath)
+{
+	const auto* Settings = GetDefault<UBlueprintScreenshotToolSettings>();
+	FNotificationInfo NotificationInfo(FText::FromString(TEXT("Directory does not exist: \n") + InPath));
+	NotificationInfo.ExpireDuration = Settings->ExpireDuration;
+	NotificationInfo.bFireAndForget = true;
+	NotificationInfo.bUseSuccessFailIcons = Settings->bUseSuccessFailIcons;
+
+	const auto Notification = FSlateNotificationManager::Get().AddNotification(NotificationInfo);
+	Notification->SetCompletionState(SNotificationItem::CS_Fail);
+}
+
+UTextureRenderTarget2D* UBlueprintScreenshotToolHandler::DrawGraphEditor(TSharedPtr<SGraphEditor> InGraphEditor, const FVector2D& InWindowSize)
+{
+	constexpr auto bUseGamma = true;
+	constexpr auto DrawTimes = 2;
+	constexpr auto Filter = TF_Default;
+	
+	FWidgetRenderer* WidgetRenderer = new FWidgetRenderer(bUseGamma, true);
+	UTextureRenderTarget2D* RenderTarget = FWidgetRenderer::CreateTargetFor(
+		InWindowSize,
+		Filter,
+		bUseGamma
+	);
+
+	if (!ensureMsgf(IsValid(RenderTarget), TEXT("RenderTarget is not valid")))
+	{
+		return nullptr;
+	}
+	
+	if (bUseGamma)
+	{
+		RenderTarget->bForceLinearGamma = true;
+		RenderTarget->UpdateResourceImmediate(true);
+	}
+
+	for (int32 Count = 0; Count < DrawTimes; Count++)
+	{
+		constexpr auto RenderingScale = 1.f;
+		constexpr auto DeltaTime = 0.f;
+		WidgetRenderer->DrawWidget(
+			RenderTarget,
+			InGraphEditor.ToSharedRef(),
+			RenderingScale,
+			InWindowSize,
+			DeltaTime
+		);
+		
+		FlushRenderingCommands();
+	}
+	
+	BeginCleanup(WidgetRenderer);
+
+	return RenderTarget;
+}
+
 FString UBlueprintScreenshotToolHandler::GetExtension(EBSTImageFormat InFormat)
 {
 	switch (InFormat)
@@ -264,4 +312,31 @@ FString UBlueprintScreenshotToolHandler::GetExtension(EBSTImageFormat InFormat)
 		checkf(false, TEXT("Unknown image format"));
 		return TEXT("png");
 	}
+}
+
+FString UBlueprintScreenshotToolHandler::GenerateScreenshotName(TSharedPtr<SGraphEditor> InGraphEditor)
+{
+	if (!ensure(InGraphEditor.IsValid()))
+	{
+		return {};
+	}
+	
+	const auto* GraphObject = InGraphEditor->GetCurrentGraph();
+
+	if (!IsValid(GraphObject))
+	{
+		return {};
+	}
+	
+	const auto* GraphOwner = GraphObject->GetOuter();
+	if (!IsValid(GraphOwner))
+	{
+		return {};
+	}
+
+	const auto OwnerName = GraphOwner->GetName();
+	const auto GraphName = GraphObject->GetName();
+	const auto ScreenshotName = FString::Printf(TEXT("%s_%s_"), *OwnerName, *GraphName);
+
+	return ScreenshotName;
 }

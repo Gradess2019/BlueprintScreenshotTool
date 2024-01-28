@@ -18,9 +18,17 @@ struct BLUEPRINTSCREENSHOTTOOL_API FBSTScreenshotData
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Screenshot Data")
 	FIntVector Size;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Screenshot Data")
+	FString CustomName;
+
 	FORCEINLINE FIntPoint GetPointSize() const
 	{
 		return FIntPoint(Size.X, Size.Y);
+	}
+
+	FORCEINLINE bool IsValid() const
+	{
+		return ColorData.Num() > 0 && Size.X > 0 && Size.Y > 0;
 	}
 };
 
