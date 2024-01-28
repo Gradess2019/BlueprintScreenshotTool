@@ -31,7 +31,7 @@ public:
 	int32 Quality = 100;
 	
 	// Directory where the screenshots will be saved
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool|General", meta = (RelativeToGameDir))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool|General", meta = (RelativePath))
 	FDirectoryPath SaveDirectory = { FPaths::ScreenShotDir() };
 	
 	// Padding around selected graph nodes in pixels when taking screenshot
