@@ -22,6 +22,7 @@ public:
 	static void TakeScreenshot();
 
 	static FString SaveScreenshot(const TArray<FColor>& InColorData, const FIntVector& InSize);
+	static FString SaveScreenshot(const FBSTScreenshotData& InData);
 	static FBSTScreenshotData CaptureGraphEditor(TSharedPtr<SGraphEditor> InGraphEditor);
 
 	static void OpenDirectory();
@@ -33,6 +34,7 @@ protected:
 	static void ShowDirectoryErrorNotification(const FString& InPath);
 	static UTextureRenderTarget2D* DrawGraphEditor(TSharedPtr<SGraphEditor> InGraphEditor, const FVector2D& InWindowSize);
 	static FString GetExtension(EBSTImageFormat InFormat);
+	static FString GenerateScreenshotName(TSharedPtr<SGraphEditor> InGraphEditor);
 };
 
 
