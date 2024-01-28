@@ -17,7 +17,10 @@ The "Blueprint Screenshot Tool" is a simple Unreal Engine plugin that adds a "Ta
 
     ![image](https://github.com/Gradess2019/BlueprintScreenshotTool/assets/38568823/fb60bc48-339b-42cc-99a7-4d56810e5603)
 
-3. Click it or press **Ctrl+F7** and wait for the screenshot to be taken
+3. Click it or press **Ctrl+F7** and wait for the screenshot of the graph to be taken
+
+    **Tip:** You can take screenshot of specific nodes by selecting them before taking the screenshot
+
 4. You'll see a notification when the screenshot is ready with a hyperlink to the screenshot file
 5. Click the hyperlink to open the screenshot directory
 6. Done
