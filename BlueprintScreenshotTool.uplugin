@@ -1,8 +1,8 @@
 {
 	"FileVersion": 3,
 	"Version": 1,
-	"VersionName": "1.0",
-	"FriendlyName": "BlueprintScreenshotTool",
+	"VersionName": "1.1.2",
+	"FriendlyName": "Blueprint Screenshot Tool",
 	"Description": "The tool to take screenshots of graphs inside blueprint editor and Blueprint Diff window",
 	"Category": "Editor",
 	"CreatedBy": "Gradess Games",
