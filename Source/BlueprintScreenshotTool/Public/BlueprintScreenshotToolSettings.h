@@ -46,8 +46,8 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool|General")
 	int32 MaxScreenshotSize = 15360;
 
-	// Default zoom amount that is used when taking screenshot of selected nodes
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool|General")
+	// Default zoom amount that is used when taking screenshot of selected nodes. ATTENTION: It will scale the size of the screenshot as well. This operation can be slow.
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool|General", meta = (ClampMin = "0.1", ClampMax = "2", UIMin = "0.1", UIMax = "2"))
 	float ZoomAmount = 1.f;
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "BlueprintScreenshotTool|Hotkeys", meta = (ConfigRestartRequired = true))
