@@ -115,8 +115,9 @@ FBSTScreenshotData UBlueprintScreenshotToolHandler::CaptureGraphEditor(TSharedPt
 	FVector2D NewViewLocation;
 	FVector2D WindowSize;
 	
-	float CachedZoomAmount;
-	float NewZoomAmount;
+	float CachedZoomAmount = 1.f;
+	float NewZoomAmount = 1.f;
+	float WindowSizeScale = 1.f;
 	
 	const auto* Settings = GetDefault<UBlueprintScreenshotToolSettings>();
 	const auto SelectedNodes = InGraphEditor->GetSelectedNodes();
@@ -131,6 +132,8 @@ FBSTScreenshotData UBlueprintScreenshotToolHandler::CaptureGraphEditor(TSharedPt
 		
 		NewViewLocation = BoundsForSelectedNodes.GetTopLeft();
 		NewZoomAmount = Settings->ZoomAmount;
+
+		WindowSizeScale = Settings->ZoomAmount;
 
 		WindowSize = BoundsForSelectedNodes.GetSize();
 	}
@@ -150,6 +153,7 @@ FBSTScreenshotData UBlueprintScreenshotToolHandler::CaptureGraphEditor(TSharedPt
 	InGraphEditor->SetViewLocation(NewViewLocation, NewZoomAmount);
 	
 	WindowSize = WindowSize.ClampAxes(Settings->MinScreenshotSize, Settings->MaxScreenshotSize);
+	WindowSize *= WindowSizeScale;
 
 	InGraphEditor->ClearSelectionSet();
 

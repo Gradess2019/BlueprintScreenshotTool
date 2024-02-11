@@ -54,7 +54,10 @@ void FBlueprintScreenshotToolStyle::Shutdown()
 
 void FBlueprintScreenshotToolStyle::ReloadTextures()
 {
-	FSlateApplication::Get().GetRenderer()->ReloadTextureResources();
+	if (FSlateApplication::IsInitialized())
+	{
+		FSlateApplication::Get().GetRenderer()->ReloadTextureResources();
+	}
 }
 
 const ISlateStyle& FBlueprintScreenshotToolStyle::Get()
