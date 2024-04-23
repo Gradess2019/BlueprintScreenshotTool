@@ -115,7 +115,7 @@ TSet<TSharedPtr<SGraphEditor>> UBlueprintScreenshotToolWindowManager::FindGraphE
 	TArray<TSharedPtr<SGraphEditor>> GraphEditors;
 
 	Algo::Transform(Widgets, GraphEditors, [](TSharedPtr<SWidget> Widget) { return StaticCastSharedPtr<SGraphEditor>(Widget); });
-	Algo::RemoveIf(GraphEditors, [](TSharedPtr<SGraphEditor> GraphEditor) { return !GraphEditor.IsValid(); });
+	auto Index = Algo::RemoveIf(GraphEditors, [](TSharedPtr<SGraphEditor> GraphEditor) { return !GraphEditor.IsValid(); });
 
 	return TSet<TSharedPtr<SGraphEditor>>(GraphEditors);
 }
