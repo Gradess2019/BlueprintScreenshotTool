@@ -310,10 +310,8 @@ FString UBlueprintScreenshotToolHandler::GetExtension(EBSTImageFormat InFormat)
 		return TEXT("png");
 	case EBSTImageFormat::JPG:
 		return TEXT("jpg");
-	case EBSTImageFormat::BMP:
-		return TEXT("bmp");
 	default:
-		checkf(false, TEXT("Unknown image format"));
+		ensureMsgf(false, TEXT("Unknown image format"));
 		return TEXT("png");
 	}
 }
