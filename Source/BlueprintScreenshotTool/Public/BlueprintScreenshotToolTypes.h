@@ -36,6 +36,5 @@ UENUM()
 enum class EBSTImageFormat : uint8
 {
 	PNG = EImageFormat::PNG,
-	JPG = EImageFormat::JPEG,
-	BMP = EImageFormat::BMP,
+	JPG = EImageFormat::JPEG
 };
