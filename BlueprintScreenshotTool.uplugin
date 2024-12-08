@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
-	"Version": 3,
-	"VersionName": "1.1.4",
+	"Version": 4,
+	"VersionName": "1.1.6",
 	"FriendlyName": "Blueprint Screenshot Tool",
 	"Description": "The tool to take screenshots of graphs inside blueprint editor and Blueprint Diff window",
 	"Category": "Editor",
