@@ -111,8 +111,8 @@ FBSTScreenshotData UBlueprintScreenshotToolHandler::CaptureGraphEditor(TSharedPt
 		return FBSTScreenshotData();
 	}
 
-	FVector2D CachedViewLocation;
-	FVector2D NewViewLocation;
+	FVector2f CachedViewLocation;
+	FVector2f NewViewLocation;
 	FVector2D WindowSize;
 	
 	float CachedZoomAmount = 1.f;
