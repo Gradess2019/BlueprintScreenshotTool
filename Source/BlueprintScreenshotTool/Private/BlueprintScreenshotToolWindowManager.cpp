@@ -114,8 +114,14 @@ TSet<TSharedPtr<SGraphEditor>> UBlueprintScreenshotToolWindowManager::FindGraphE
 	const auto Widgets = FindChildren(InWindow, TEXT("SGraphEditorImpl"));
 	TArray<TSharedPtr<SGraphEditor>> GraphEditors;
 
-	Algo::Transform(Widgets, GraphEditors, [](TSharedPtr<SWidget> Widget) { return StaticCastSharedPtr<SGraphEditor>(Widget); });
-	auto Index = Algo::RemoveIf(GraphEditors, [](TSharedPtr<SGraphEditor> GraphEditor) { return !GraphEditor.IsValid(); });
+	Algo::Transform(Widgets, GraphEditors, [](TSharedPtr<SWidget> Widget)
+	{
+		return StaticCastSharedPtr<SGraphEditor>(Widget);
+	});
+	auto Index = Algo::RemoveIf(GraphEditors, [](TSharedPtr<SGraphEditor> GraphEditor)
+	{
+		return !GraphEditor.IsValid();
+	});
 
 	return TSet<TSharedPtr<SGraphEditor>>(GraphEditors);
 }
@@ -160,7 +166,11 @@ TArray<TSharedRef<SBlueprintDiff>> UBlueprintScreenshotToolWindowManager::GetBlu
 
 	for (const auto Window : Windows)
 	{
+#if !PLATFORM_MAC
 		const auto Child = FindChild<SBlueprintDiff>(Window);
+#else
+		const auto Child = FindChild<SBlueprintDiff>(Window, TEXT("SBlueprintDiff"));
+#endif
 		if (Child.IsValid())
 		{
 			BlueprintDiffs.Add(Child.ToSharedRef());
@@ -181,7 +191,11 @@ void UBlueprintScreenshotToolWindowManager::AddScreenshotButtonToDiffs()
 
 void UBlueprintScreenshotToolWindowManager::AddButtonToDiffWindow(TSharedRef<SBlueprintDiff> InBlueprintDiff)
 {
+#if !PLATFORM_MAC
 	const auto DiffToolBars = UBlueprintScreenshotToolWindowManager::FindChildren<SMultiBoxWidget>(InBlueprintDiff);
+#else
+	const auto DiffToolBars = UBlueprintScreenshotToolWindowManager::FindChildren<SMultiBoxWidget>(InBlueprintDiff, TEXT("SMultiBoxWidget"));
+#endif
 	if (DiffToolBars.Num() <= 0)
 	{
 		return;
@@ -193,11 +207,18 @@ void UBlueprintScreenshotToolWindowManager::AddButtonToDiffWindow(TSharedRef<SBl
 		bool bTakeScreenshotButtonExists = false;
 		auto ToolbarTextToCheck = GetDefault<UBlueprintScreenshotToolSettings>()->DiffToolbarTexts;
 
+#if !PLATFORM_MAC
 		const auto TextBlocks = UBlueprintScreenshotToolWindowManager::FindChildren<STextBlock>(ToolBar);
+#else
+		const auto TextBlocks = UBlueprintScreenshotToolWindowManager::FindChildren<STextBlock>(ToolBar, TEXT("STextBlock"));
+#endif
 		for (const auto TextBlock : TextBlocks)
 		{
 			const auto& ButtonText = TextBlock->GetText();
-			const auto NumRemovedElems = ToolbarTextToCheck.RemoveAll([ButtonText](const FText& InText) { return InText.EqualToCaseIgnored(ButtonText); });
+			const auto NumRemovedElems = ToolbarTextToCheck.RemoveAll([ButtonText](const FText& InText)
+			{
+				return InText.EqualToCaseIgnored(ButtonText);
+			});
 
 			if (NumRemovedElems == 0 && !bTakeScreenshotButtonExists)
 			{
@@ -210,10 +231,10 @@ void UBlueprintScreenshotToolWindowManager::AddButtonToDiffWindow(TSharedRef<SBl
 		return bAppropriateDiffToolBar && !bTakeScreenshotButtonExists;
 	});
 
-
 	for (auto ToolBar : FilteredToolBars)
 	{
-		TSharedRef<FBlueprintScreenshotToolDiffWindowButton> NewToolBarButtonBlock(new FBlueprintScreenshotToolDiffWindowButton());
+		TSharedRef<FBlueprintScreenshotToolDiffWindowButton> NewToolBarButtonBlock(
+			new FBlueprintScreenshotToolDiffWindowButton());
 		TSharedRef<FMultiBox> MultiBoxCopy = MakeShareable(new FMultiBox(ToolBar->GetMultiBox().Get()));
 		MultiBoxCopy->AddMultiBlock(NewToolBarButtonBlock);
 		ToolBar->SetMultiBox(MultiBoxCopy);
