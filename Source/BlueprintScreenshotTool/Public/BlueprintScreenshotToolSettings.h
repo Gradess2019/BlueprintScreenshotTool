@@ -8,7 +8,7 @@
 #include "UObject/Object.h"
 #include "BlueprintScreenshotToolSettings.generated.h"
 
-UCLASS(BlueprintType, Config = BluerpintScreenshotTool)
+UCLASS(BlueprintType, Config = BlueprintScreenshotTool)
 class BLUEPRINTSCREENSHOTTOOL_API UBlueprintScreenshotToolSettings : public UObject
 {
 	GENERATED_BODY()
