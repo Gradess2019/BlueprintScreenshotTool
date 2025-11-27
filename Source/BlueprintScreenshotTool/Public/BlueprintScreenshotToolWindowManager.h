@@ -28,6 +28,7 @@ public:
 	static TSet<TSharedPtr<SGraphEditor>> FindActiveGraphEditors();
 	static TSet<TSharedPtr<SGraphEditor>> FindAllGraphEditors();
 
+#if !PLATFORM_MAC
 	template <typename T>
 	static FName GetTemplateName()
 	{
@@ -57,6 +58,30 @@ public:
 		Algo::Transform(Widgets, Result, [](TSharedPtr<SWidget> Widget) { return StaticCastSharedPtr<T>(Widget); });
 		return Result;
 	}
+#else
+	template <typename T>
+	static TSharedPtr<T> FindParent(TSharedPtr<SWidget> InWidget, const FName& InParentWidgetType)
+	{
+		return StaticCastSharedPtr<T>(FindParent(InWidget, InParentWidgetType));
+	}
+
+	template <typename T>
+	static TSharedPtr<T> FindChild(TSharedPtr<SWidget> InWidget, const FName& InChildWidgetType)
+	{
+		return StaticCastSharedPtr<T>(FindChild(InWidget, InChildWidgetType));
+	}
+
+	template <typename T>
+	static TSet<TSharedPtr<T>> FindChildren(TSharedPtr<SWidget> InWidget, const FName& InChildWidgetType)
+	{
+		auto Widgets = FindChildren(InWidget, InChildWidgetType);
+
+		TSet<TSharedPtr<T>> Result;
+
+		Algo::Transform(Widgets, Result, [](TSharedPtr<SWidget> Widget) { return StaticCastSharedPtr<T>(Widget); });
+		return Result;
+	}
+#endif // PLATFORM_MAC
 
 	static TArray<TSharedRef<SWindow>> GetWindows();
 	static TArray<TSharedRef<SBlueprintDiff>> GetBlueprintDiffs();
